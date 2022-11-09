@@ -97,20 +97,33 @@ public class ImplementationDrive implements Storage {
     /*--------------------------------------------------------------------------------------*/
 
     @Override
-    public boolean setPath(String apsolutePath) {
-        java.io.File storage = new java.io.File(apsolutePath);
-        java.io.File configFile;
+    public boolean setPath(String storageId) {
+        File storage = null;
+        try {
+            storage = service.files().get(storageId).setFields("id,name,parents,mimeType,size").execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         boolean operation = false;
 
-
-        if (!storage.exists()) {
+        if (storage == null) {
             return false;
         } else {
-            for (java.io.File file : Objects.requireNonNull(storage.listFiles())) {
+            ArrayList<String> listFilesInStorage = (ArrayList<String>) searchFilesInFolder(".",null,null,null,null,null);
+            for (int i = 0; i < listFilesInStorage.size(); i++) {
+                String fileId = listFilesInStorage.get(i);
+
+                File file = null;
+                try {
+                    file = service.files().get(fileId).setFields("id,name,parents,mimeType,size").execute();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
                 if (file.getName().contains("_CONFIGURATION.txt")) {
                     try {
                         List<String> configAtributes = new ArrayList<>();
-                        configFile = file;
+                        java.io.File configFile = new java.io.File("D:/googleDriveFiles" , storage.getName()+"_CONFIGURATION.txt");
                         Scanner myReader = new Scanner(configFile);
 
                         while (myReader.hasNextLine()) {
@@ -120,12 +133,12 @@ public class ImplementationDrive implements Storage {
                         }
 
                         StorageArguments.name = configAtributes.get(0);
-                        StorageArguments.path = apsolutePath;
+                        StorageArguments.path = storageId;
                         StorageArguments.totalSpace = Integer.parseInt(configAtributes.get(1));
                         StorageArguments.restrictedExtensions = Collections.singletonList(configAtributes.get(2));
                         StorageArguments.maxFilesInStorage = Integer.parseInt(configAtributes.get(3));
-                        StorageArguments.usedSpace = getUsedSpaceInStorage(apsolutePath);
-                        StorageArguments.fileNumberInStorage = searchFilesInFolders("", null, null, null, null, null).size();
+                        StorageArguments.usedSpace = getUsedSpaceInStorage(storageId);
+                        StorageArguments.fileNumberInStorage = searchFilesInFolders(".", null, null, null, null, null).size();
                         operation = true;
                     } catch (FileNotFoundException e) {
                         throw new RuntimeException(e);
