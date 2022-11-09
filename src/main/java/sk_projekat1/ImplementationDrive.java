@@ -89,10 +89,7 @@ public class ImplementationDrive implements Storage {
     static {
         try {
             StorageManager.registerStorage(new ImplementationDrive());
-
-        } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (GeneralSecurityException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -106,18 +103,17 @@ public class ImplementationDrive implements Storage {
         boolean operation = false;
 
 
-        if(!storage.exists()){
-            return  false;
-        }
-        else{
-            for(java.io.File file : Objects.requireNonNull(storage.listFiles())){
-                if(file.getName().contains("_CONFIGURATION.txt")){
+        if (!storage.exists()) {
+            return false;
+        } else {
+            for (java.io.File file : Objects.requireNonNull(storage.listFiles())) {
+                if (file.getName().contains("_CONFIGURATION.txt")) {
                     try {
                         List<String> configAtributes = new ArrayList<>();
                         configFile = file;
                         Scanner myReader = new Scanner(configFile);
 
-                        while(myReader.hasNextLine()){
+                        while (myReader.hasNextLine()) {
                             String line = myReader.nextLine();
                             String[] value = line.split(":");
                             configAtributes.add(value[1]);
@@ -129,15 +125,16 @@ public class ImplementationDrive implements Storage {
                         StorageArguments.restrictedExtensions = Collections.singletonList(configAtributes.get(2));
                         StorageArguments.maxFilesInStorage = Integer.parseInt(configAtributes.get(3));
                         StorageArguments.usedSpace = getUsedSpaceInStorage(apsolutePath);
-                        StorageArguments.fileNumberInStorage = searchFilesInFolders("",TypeSort.ALPHABETICAL_ASC,TypeFilter.FILE_EXTENSION).size();
-                        operation=true;
+                        StorageArguments.fileNumberInStorage = searchFilesInFolders("", null, null, null, null, null).size();
+                        operation = true;
                     } catch (FileNotFoundException e) {
                         throw new RuntimeException(e);
                     }
                 }
             }
         }
-        return  operation;
+
+        return operation;
     }
 
     @Override
@@ -171,7 +168,7 @@ public class ImplementationDrive implements Storage {
 
 
         // Kreiranje lokalnog file
-        java.io.File localFile = new java.io.File("D:/googleDriveFiles", storageName +"_Configuration.txt");
+        java.io.File localFile = new java.io.File("D:/googleDriveFiles", storageName + "_Configuration.txt");
         try {
             FileWriter fileWriter = new FileWriter(localFile);
             fileWriter.write("Storage name:" + storageName + "\n");
@@ -185,7 +182,7 @@ public class ImplementationDrive implements Storage {
 
         // Kreiranje config file
         File readMeMetaData = new File();
-        readMeMetaData.setName(storageName +"_Configuration.txt");
+        readMeMetaData.setName(storageName + "_Configuration.txt");
         readMeMetaData.setParents(Collections.singletonList(StorageArguments.driveStorage_Id));
 
         FileContent readMeContent = new FileContent("text/txt", localFile);
@@ -229,7 +226,7 @@ public class ImplementationDrive implements Storage {
         }
 
         // Kreiranje lokalnog file
-        java.io.File localFile = new java.io.File("D:/googleDriveFiles", StorageArguments.name+"_CONFIGURATION.txt");
+        java.io.File localFile = new java.io.File("D:/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
         try {
             FileWriter fileWriter = new FileWriter(localFile);
             fileWriter.write("Storage name: " + StorageArguments.path + "\n");
@@ -243,7 +240,7 @@ public class ImplementationDrive implements Storage {
 
         // Kreiranje config file na drajvu
         File readMeMetaData = new File();
-        readMeMetaData.setName(StorageArguments.name +"_CONFIGURATION.txt");
+        readMeMetaData.setName(StorageArguments.name + "_CONFIGURATION.txt");
         readMeMetaData.setParents(Collections.singletonList(StorageArguments.driveStorage_Id));
 
         FileContent readMeContent = new FileContent("text/text", localFile);
@@ -263,19 +260,18 @@ public class ImplementationDrive implements Storage {
     @Override
     public boolean createFolder(String folderName, String folderPath) {
 
-        if(folderPath.equals(".")){
-            folderPath="";
+        if (folderPath.equals(".")) {
+            folderPath = "";
         }
 
         //Provera da li postoji folder za datim imenom na zadatoj putanji
-        String name = "name='"+folderName+"'";
-        String nameAndMimeiType= name +" and mimeType='" + "application/vnd.google-apps.folder" +"'";
-        ArrayList<File> files = (ArrayList<File>) getFilesByName("",nameAndMimeiType,service);
+        String name = "name='" + folderName + "'";
+        String nameAndMimeiType = name + " and mimeType='" + "application/vnd.google-apps.folder" + "'";
+        ArrayList<File> files = (ArrayList<File>) getFilesByName("", nameAndMimeiType, service);
 
-        String parentID = getFileId(folderPath,"",service);// pitaj
-        for (int i = 0 ; i < files.size(); i++){
-
-            if(files.get(i).getParents().contains(parentID) && files.get(i).getName().equals(folderName)){
+        String parentID = getFileId(folderPath, "", service);// pitaj
+        for (File file : files) {
+            if (file.getParents().contains(parentID) && file.getName().equals(folderName)) {
                 String apsoPath = StorageArguments.name + "/" + folderPath + "/" + folderName;
                 throw new CustomException("Action FAILED \t Folder: " + apsoPath + " already exists");
             }
@@ -292,14 +288,15 @@ public class ImplementationDrive implements Storage {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         return true;
     }
 
     @Override
     public boolean createFile(String fileName, String filePath) {
 
-        if(filePath.equals(".")){
-            filePath="";
+        if (filePath.equals(".")) {
+            filePath = "";
         }
 
         //Provera ekstenzije fajla
@@ -312,13 +309,13 @@ public class ImplementationDrive implements Storage {
         }
 
         //Provera da li postoji fajl za datim imenom na zadatoj putanji
-        String name = "name='"+fileName+"'";
-        String nameAndMimeiType= name +" and mimeType!='" + "application/vnd.google-apps.folder" +"'";
-        ArrayList<File> files = (ArrayList<File>) getFilesByName("",nameAndMimeiType,service);
+        String name = "name='" + fileName + "'";
+        String nameAndMimeiType = name + " and mimeType!='" + "application/vnd.google-apps.folder" + "'";
+        ArrayList<File> files = (ArrayList<File>) getFilesByName("", nameAndMimeiType, service);
 
-        String parentID = getFileId(filePath,"application/vnd.google-apps.folder",service);//
-        for (int i = 0 ; i < files.size(); i++){
-            if(files.get(i).getParents().contains(parentID) && files.get(i).getName().equals(fileName)){
+        String parentID = getFileId(filePath, "application/vnd.google-apps.folder", service);//
+        for (File value : files) {
+            if (value.getParents().contains(parentID) && value.getName().equals(fileName)) {
                 String absolutePath = StorageArguments.name + "/" + filePath + "/" + fileName;
                 throw new CustomException("Action FAILED \t File: " + absolutePath + " already exists");
             }
@@ -329,10 +326,10 @@ public class ImplementationDrive implements Storage {
         fileMetadata.setName(fileName);
         fileMetadata.setParents(Collections.singletonList(parentID));
         java.io.File localFile = new java.io.File("D:/googleDriveFiles/testSizeStorage.txt"); //zbog testiranja
-        FileContent fileContent = new FileContent("txt/txt",localFile);
+        FileContent fileContent = new FileContent("txt/txt", localFile);
 
         try {
-            File file = service.files().create(fileMetadata,fileContent).setFields("id,name,parents,mimeType,size").execute();
+            File file = service.files().create(fileMetadata, fileContent).setFields("id,name,parents,mimeType,size").execute();
 
             //Provera prekoracenje velicine skladista
             if (StorageArguments.usedSpace + file.getSize() > StorageArguments.totalSpace) {
@@ -347,6 +344,7 @@ public class ImplementationDrive implements Storage {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         return true;
     }
 
@@ -354,16 +352,16 @@ public class ImplementationDrive implements Storage {
     public boolean moveFile(String oldFilePath, String newFilePath) {
 
         //Proverava da li je dobra putanja, ako jeste uzima id poslednjeg parenta
-        String oldFolderParentId = getFileId(oldFilePath,"",service);
+        String oldFolderParentId = getFileId(oldFilePath, "", service);
 
         //Provera da li ono sto se premesta  je fajl
         String[] splitOldPath = oldFilePath.split("/");
-        String targetName = splitOldPath[splitOldPath.length-1];
-        String name = "name='"+targetName+"'";
-        String nameAndMimeiType= name +" and mimeType!='" + "application/vnd.google-apps.folder" +"'";
-        ArrayList<File> files = (ArrayList<File>) getFilesByName("",nameAndMimeiType,service);
+        String targetName = splitOldPath[splitOldPath.length - 1];
+        String name = "name='" + targetName + "'";
+        String nameAndMimeiType = name + " and mimeType!='" + "application/vnd.google-apps.folder" + "'";
+        ArrayList<File> files = (ArrayList<File>) getFilesByName("", nameAndMimeiType, service);
 
-        if(files.isEmpty()){
+        if (files.isEmpty()) {
             throw new CustomException("Action FAILED \t Only files can be moved");
         }
 
@@ -385,13 +383,12 @@ public class ImplementationDrive implements Storage {
         }
 
         // Move the file to the new folder
-        String newFolderParentId = getFileId(newFilePath,"application/vnd.google-apps.folder",service);
+        String newFolderParentId = getFileId(newFilePath, "application/vnd.google-apps.folder", service);
 
 
         //Ako vec postoji fajl sa zadatim imenom na putanji na kojoj hocemo da premestimo
-        for (int i = 0 ; i < files.size(); i++){
-
-            if(files.get(i).getParents().contains(newFolderParentId) && files.get(i).getName().equals(targetName)){
+        for (File value : files) {
+            if (value.getParents().contains(newFolderParentId) && value.getName().equals(targetName)) {
                 String apsoPath = StorageArguments.name + "/" + newFilePath + "/" + targetName;
                 throw new CustomException("Action FAILED \t File : " + apsoPath + " already exists");
             }
@@ -412,22 +409,22 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean renameFileObject(String foNewName, String foPath) {
-        String [] folders = foPath.split("/");
-        String parentPath =folders[0];
+        String[] folders = foPath.split("/");
+        StringBuilder parentPath = Optional.ofNullable(folders[0]).map(StringBuilder::new).orElse(null);
 
-        for(int i = 1 ; i < folders.length-1; i++){
-            parentPath = parentPath + "/" + folders[i];
+        for (int i = 1; i < folders.length - 1; i++) {
+            parentPath = (parentPath == null ? new StringBuilder("null") : parentPath).append("/").append(folders[i]);
         }
 
-        String fileObjectId =  getFileId(foPath,"",service); // id file object koji zelimo da preimenujemo
-        String parentFileObjectId = getFileId(parentPath,"",service); // id parenta
+        String fileObjectId = getFileId(foPath, "", service); // id file object koji zelimo da preimenujemo
+        String parentFileObjectId = getFileId(parentPath.toString(), "", service); // id parenta
 
         //Proverava da li postoji da li postoji fajl ili folder koji se vec tako zove
-        String name = "name='"+foNewName+"'";
-        ArrayList<File> files = (ArrayList<File>) getFilesByName(name,"",service);
+        String name = "name='" + foNewName + "'";
+        ArrayList<File> files = (ArrayList<File>) getFilesByName(name, "", service);
 
-        for (int i = 0 ; i < files.size(); i++){
-            if(files.get(i).getParents().contains(parentFileObjectId) && files.get(i).getName().equals(foNewName)){
+        for (File file : files) {
+            if (file.getParents().contains(parentFileObjectId) && file.getName().equals(foNewName)) {
                 String apsoPath = StorageArguments.name + "/" + parentPath + "/" + foNewName;
                 throw new CustomException("Action FAILED \t File : " + apsoPath + " already exists");
             }
@@ -437,14 +434,15 @@ public class ImplementationDrive implements Storage {
             File foMetaData = service.files().get(fileObjectId).setFields("name").execute();
             foMetaData.setName(foNewName);
 
-            service.files().update(fileObjectId,foMetaData).
+            service.files().update(fileObjectId, foMetaData).
                     setFields("name").
                     execute();
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return  true;
+
+        return true;
     }
 
     @Override
@@ -452,10 +450,10 @@ public class ImplementationDrive implements Storage {
         String[] folders = foPath.split("/");
         String fileObjectId;
 
-        if(folders[folders.length - 1].contains(".")){
-            fileObjectId = getFileId(foPath,"",service);
-        }else{
-            fileObjectId = getFileId(foPath,"application/vnd.google-apps.folder",service);
+        if (folders[folders.length - 1].contains(".")) {
+            fileObjectId = getFileId(foPath, "", service);
+        } else {
+            fileObjectId = getFileId(foPath, "application/vnd.google-apps.folder", service);
         }
 
         try {
@@ -464,29 +462,29 @@ public class ImplementationDrive implements Storage {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         return true;
     }
 
     @Override
     public boolean importFileObject(String[] importLocalPaths, String importStoragePath) {
-        String driveFolderId = getFileId(importStoragePath,"",service);
+        String driveFolderId = getFileId(importStoragePath, "", service);
         try {
             File driveFolder = service.files().get(driveFolderId).execute(); // folder u koji zelis da uploadas stvari
 
-            if(!driveFolder.getMimeType().equals("application/vnd.google-apps.folder")){ // proveravas da li je tipa folder
+            if (!driveFolder.getMimeType().equals("application/vnd.google-apps.folder")) { // proveravas da li je tipa folder
                 String apsoluthPath = StorageArguments.name + "/" + importStoragePath;
-                throw new CustomException("Action FAILED \t"+ apsoluthPath  + " is not a directory");
+                throw new CustomException("Action FAILED \t" + apsoluthPath + " is not a directory");
             }
 
-            for(String importLocalPath : importLocalPaths){
+            for (String importLocalPath : importLocalPaths) {
                 java.io.File localFile = new java.io.File(importLocalPath);
-                FileContent fileContent = new FileContent("*/*",localFile);
+                FileContent fileContent = new FileContent("*/*", localFile);
 
-                if(localFile.exists()){
-                    if(localFile.isDirectory()){
+                if (localFile.exists()) {
+                    if (localFile.isDirectory()) {
                         throw new CustomException("Action FAILED \t" + importLocalPath + " \t Directory can not be upload on drive");
-                    }
-                    else if(localFile.isFile()){
+                    } else if (localFile.isFile()) {
                         try {
                             //Provera ekstenzije fajla
                             if (StorageArguments.restrictedExtensions.contains(FilenameUtils.getExtension(localFile.getName()))) {
@@ -500,7 +498,7 @@ public class ImplementationDrive implements Storage {
                             importMetaData.setName(localFile.getName());
                             importMetaData.setParents(Collections.singletonList(driveFolderId));
 
-                            File file = service.files().create(importMetaData,fileContent).setFields("id,name,parents,mimeType,size").execute();
+                            File file = service.files().create(importMetaData, fileContent).setFields("id,name,parents,mimeType,size").execute();
 
                             //Provera prekoracenje velicine skladista
                             if (StorageArguments.usedSpace + file.getSize() > StorageArguments.totalSpace) {
@@ -515,23 +513,23 @@ public class ImplementationDrive implements Storage {
                             throw new RuntimeException(e);
                         }
                     }
-                }
-                else{
-                    throw new CustomException("Action FAILED \t"+ localFile.getAbsolutePath() + "  does not exists");
+                } else {
+                    throw new CustomException("Action FAILED \t" + localFile.getAbsolutePath() + "  does not exists");
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         return true;
     }
 
     @Override
     public boolean exportFileObject(String exportStoragePath, String exportLocalPath) {
-        String fileId = getFileId(exportStoragePath,"",service);
+        String fileId = getFileId(exportStoragePath, "", service);
         java.io.File localFile = new java.io.File(exportLocalPath);
 
-        if(!localFile.exists()){
+        if (!localFile.exists()) {
             throw new CustomException(localFile.getAbsolutePath() + " does not exists");
         }
         if (!localFile.isDirectory()) {
@@ -541,12 +539,12 @@ public class ImplementationDrive implements Storage {
         try {
             File fileOnDrive = service.files().get(fileId).setFields("name,mimeType").execute();
 
-            if(fileOnDrive.getMimeType().equals("application/vnd.google-apps.folder")){
+            if (fileOnDrive.getMimeType().equals("application/vnd.google-apps.folder")) {
                 String apsoluthPath = StorageArguments.name + "/" + exportStoragePath;
-                throw new CustomException("Action FAILED \t"+ apsoluthPath  + "\t Directory can not be download");
+                throw new CustomException("Action FAILED \t" + apsoluthPath + "\t Directory can not be download");
             }
 
-            java.io.File downloadedFile = new java.io.File(exportLocalPath,fileOnDrive.getName());
+            java.io.File downloadedFile = new java.io.File(exportLocalPath, fileOnDrive.getName());
             OutputStream outputStream = new ByteArrayOutputStream();
             service.files().get(fileId).executeMediaAndDownloadTo(outputStream);
             FileWriter fileWriter = new FileWriter(downloadedFile);
@@ -558,32 +556,27 @@ public class ImplementationDrive implements Storage {
             throw new RuntimeException(e);
         }
 
-        return  true;
+        return true;
     }
 
     @Override
-    public List<String> searchFilesInFolder(String folderPath, TypeSort typeSort, TypeFilter typeFilter) {
-        String folderDriveId = getFileId(folderPath,"application/vnd.google-apps.folder",service);
+    public List<String> searchFilesInFolder(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+        String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //lista fajlova iz tog foldera
 
-        String mimeiType= "mimeType!='application/vnd.google-apps.folder'";
-        ArrayList<File> files = (ArrayList<File>) getFilesByName("",mimeiType,service);
+        String mimeiType = "mimeType!='application/vnd.google-apps.folder'";
+        ArrayList<File> files = (ArrayList<File>) getFilesByName("", mimeiType, service);
 
-        for(int i = 0; i < files.size(); i++){
-            if(files.get(i).getParents() != null && files.get(i).getParents().contains(folderDriveId)){
-                resultList.add(files.get(i).getId());//
+        for (File file : files) {
+            if (file.getParents() != null && file.getParents().contains(folderDriveId)) {
+                resultList.add(file.getId());//
             }
         }
 
-        switch (typeFilter) {
-            case FILE_EXTENSION -> {
-                String ext = "html";
-                resultList = filterFilesByExt(resultList, typeFilter, ext);
-            }
-            case MODIFIED_DATE, CREATED_DATE -> {
-                Date d1 = new Date(2022 - 1900, Calendar.OCTOBER, 30);
-                Date d2 = new Date(2022 - 1900, Calendar.NOVEMBER, 1);
-                resultList = filterFilesByDate(resultList, typeFilter, d1, d2);
+        if (typeFilter != null) {
+            switch (typeFilter) {
+                case FILE_EXTENSION -> resultList = filterFilesByExt(resultList, typeFilter, fileExtension);
+                case MODIFIED_DATE, CREATED_DATE -> resultList = filterFilesByDate(resultList, typeFilter, startDate, endDate);
             }
         }
 
@@ -595,43 +588,36 @@ public class ImplementationDrive implements Storage {
     }
 
     @Override
-    public List<String> searchFilesInFolders(String folderPath, TypeSort typeSort, TypeFilter typeFilter) {
-        String folderDriveId = getFileId(folderPath,"application/vnd.google-apps.folder",service);
+    public List<String> searchFilesInFolders(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+        String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //konacna lista svih fajlova
 
 
         List<String> listIdSubFolders = new ArrayList<>();
-        ArrayList<File> files = (ArrayList<File>) getFilesByName("","",service);
+        ArrayList<File> files = (ArrayList<File>) getFilesByName("", "", service);
 
         while (true) {
-            for (int i = 0; i < files.size(); i++) {
-                if (files.get(i).getParents() != null && files.get(i).getParents().contains(folderDriveId)) {
+            for (File file : files) {
+                if (file.getParents() != null && file.getParents().contains(folderDriveId)) {
 
-                    if (files.get(i).getMimeType().equals("application/vnd.google-apps.folder")) {
-                        listIdSubFolders.add(files.get(i).getId());
-                    }
-                    else {
-                        resultList.add(files.get(i).getId());//
+                    if (file.getMimeType().equals("application/vnd.google-apps.folder")) {
+                        listIdSubFolders.add(file.getId());
+                    } else {
+                        resultList.add(file.getId());//
                     }
                 }
             }
-            if(listIdSubFolders.isEmpty()) {
+            if (listIdSubFolders.isEmpty()) {
                 break;
             }
 
             folderDriveId = listIdSubFolders.get(0); //uzimas sledeci subfolder da prodjes kroz njega
             listIdSubFolders.remove(folderDriveId); //brises njegov id iz liste
         }
-
-        switch (typeFilter) {
-            case FILE_EXTENSION -> {
-                String ext = "html";
-                resultList = filterFilesByExt(resultList, typeFilter, ext);
-            }
-            case MODIFIED_DATE, CREATED_DATE -> {
-                Date d1 = new Date(2022 - 1900, Calendar.OCTOBER, 30);
-                Date d2 = new Date(2022 - 1900, Calendar.NOVEMBER, 1);
-                resultList = filterFilesByDate(resultList, typeFilter, d1, d2);
+        if (typeFilter != null) {
+            switch (typeFilter) {
+                case FILE_EXTENSION -> resultList = filterFilesByExt(resultList, typeFilter, fileExtension);
+                case MODIFIED_DATE, CREATED_DATE -> resultList = filterFilesByDate(resultList, typeFilter, startDate, endDate);
             }
         }
 
@@ -643,28 +629,23 @@ public class ImplementationDrive implements Storage {
     }
 
     @Override
-    public List<String> searchFilesWithExtensionInFolder(String fileExtension, String folderPath, TypeSort typeSort, TypeFilter typeFilter) {
-        String folderDriveId = getFileId(folderPath,"application/vnd.google-apps.folder",service);
+    public List<String> searchFilesWithExtensionInFolder(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+        String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //lista fajlova iz tog foldera
 
-        String mimeiType= "mimeType!='application/vnd.google-apps.folder'";
-        ArrayList<File> files = (ArrayList<File>) getFilesByName("",mimeiType,service);
+        String mimeiType = "mimeType!='application/vnd.google-apps.folder'";
+        ArrayList<File> files = (ArrayList<File>) getFilesByName("", mimeiType, service);
 
-        for(int i = 0; i < files.size(); i++){
-            if(files.get(i).getParents() != null && files.get(i).getParents().contains(folderDriveId) && files.get(i).getName().contains("."+ fileExtension)){
-                resultList.add(files.get(i).getId());//
+        for (File file : files) {
+            if (file.getParents() != null && file.getParents().contains(folderDriveId) && file.getName().contains("." + fileExtension)) {
+                resultList.add(file.getId());//
             }
         }
 
-        switch (typeFilter) {
-            case FILE_EXTENSION -> {
-                String ext = "html";
-                resultList = filterFilesByExt(resultList, typeFilter, ext);
-            }
-            case MODIFIED_DATE, CREATED_DATE -> {
-                Date d1 = new Date(2022 - 1900, Calendar.OCTOBER, 30);
-                Date d2 = new Date(2022 - 1900, Calendar.NOVEMBER, 1);
-                resultList = filterFilesByDate(resultList, typeFilter, d1, d2);
+        if (typeFilter != null) {
+            switch (typeFilter) {
+                case FILE_EXTENSION -> resultList = filterFilesByExt(resultList, typeFilter, fileExtension);
+                case MODIFIED_DATE, CREATED_DATE -> resultList = filterFilesByDate(resultList, typeFilter, startDate, endDate);
             }
         }
 
@@ -676,115 +657,110 @@ public class ImplementationDrive implements Storage {
     }
 
     @Override
-    public List<String> searchFilesWithSubstringInFolder(String fileSubstring, String folderPath, TypeSort typeSort, TypeFilter typeFilter) {
-        String folderDriveId = getFileId(folderPath,"application/vnd.google-apps.folder",service);
+    public List<String> searchFilesWithSubstringInFolder(String fileSubstring, String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+        String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //lista fajlova iz tog foldera
 
-        String mimeiType= "mimeType!='application/vnd.google-apps.folder'";
-        ArrayList<File> files = (ArrayList<File>) getFilesByName("",mimeiType,service);
+        String mimeiType = "mimeType!='application/vnd.google-apps.folder'";
+        ArrayList<File> files = (ArrayList<File>) getFilesByName("", mimeiType, service);
 
-        for(int i = 0; i < files.size(); i++){
-            if(files.get(i).getParents() != null && files.get(i).getParents().contains(folderDriveId)
-                    && files.get(i).getName().toLowerCase().contains(fileSubstring.toLowerCase())){
-                resultList.add(files.get(i).getId());//
+        for (File file : files) {
+            if (file.getParents() != null && file.getParents().contains(folderDriveId)
+                    && file.getName().toLowerCase().contains(fileSubstring.toLowerCase())) {
+                resultList.add(file.getId());//
             }
         }
 
-        switch (typeFilter) {
-            case FILE_EXTENSION -> {
-                String ext = "html";
-                resultList = filterFilesByExt(resultList, typeFilter, ext);
-            }
-            case MODIFIED_DATE, CREATED_DATE -> {
-                Date d1 = new Date(2022 - 1900, Calendar.OCTOBER, 30);
-                Date d2 = new Date(2022 - 1900, Calendar.NOVEMBER, 1);
-                resultList = filterFilesByDate(resultList, typeFilter, d1, d2);
+        if (typeFilter != null) {
+            switch (typeFilter) {
+                case FILE_EXTENSION -> resultList = filterFilesByExt(resultList, typeFilter, fileExtension);
+                case MODIFIED_DATE, CREATED_DATE -> resultList = filterFilesByDate(resultList, typeFilter, startDate, endDate);
             }
         }
 
         if (typeSort != null) {
             resultList = sortFiles(resultList, typeSort);
         }
-
 
         return resultList;
     }
 
     @Override
     public boolean existsInFolder(String[] fileName, String folderPath) {
-        String folderId = getFileId(folderPath,"application/vnd.google-apps.folder",service);
+        String folderId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         boolean exists = false;
 
-        for (String targetFileName : fileName){
-            String name ="name='" + targetFileName + "'";
-            String nameAndMimeiType= name +" and mimeType!='application/vnd.google-apps.folder'";
-            ArrayList<File> files = (ArrayList<File>) getFilesByName("",nameAndMimeiType,service);
+        for (String targetFileName : fileName) {
+            String name = "name='" + targetFileName + "'";
+            String nameAndMimeiType = name + " and mimeType!='application/vnd.google-apps.folder'";
+            ArrayList<File> files = (ArrayList<File>) getFilesByName("", nameAndMimeiType, service);
 
-            for(int i = 0; i < files.size(); i++){
-                if(files.get(i).getParents().contains(folderId) && files.get(i).getName().equals(targetFileName)){
+            for (File file : files) {
+                if (file.getParents().contains(folderId) && file.getName().equals(targetFileName)) {
                     exists = true;
+                    break;
                 }
             }
 
-            if(exists){
+            if (exists) {
                 exists = false;
-            }else{
+            } else {
                 throw new CustomException("File:" + targetFileName + "  does not exists in folder:"
                         + StorageArguments.name + "/" + folderPath);
             }
         }
+
         return true;
     }
 
     @Override
     public String findFileFolder(String fileName) {
-        String name ="name='" + fileName + "'";
-        String nameAndMimeiType= name +" and mimeType!='application/vnd.google-apps.folder'";
-        ArrayList<File> files = (ArrayList<File>) getFilesByName("",nameAndMimeiType,service);
-        String folderIdDrive = "";
-        String apolutepath = "";
+        String name = "name='" + fileName + "'";
+        String nameAndMimeiType = name + " and mimeType!='application/vnd.google-apps.folder'";
+        ArrayList<File> files = (ArrayList<File>) getFilesByName("", nameAndMimeiType, service);
+        String folderIdDrive;
+        StringBuilder apsoPath = new StringBuilder();
         List<String> resultList = new ArrayList<>(); // pravim listu zbog bin foldera
 
         //ako je prazan files baci da ne postoji fajl
-        if(files.isEmpty()){
+        if (files.isEmpty()) {
             throw new CustomException("File " + "'" + fileName + "'" + "  does not exists");
         }
 
-        for(int i = 0; i < files.size(); i++){
-            if(files.get(i).getName().equals(fileName) && !(files.get(i).getParents().equals(null))){
-                folderIdDrive = files.get(i).getParents().get(0);
+        for (File file : files) {
+            if (file.getName().equals(fileName) && !(file.getParents().equals(null))) {
+                folderIdDrive = file.getParents().get(0);
                 try {
                     File folderDrive = service.files().get(folderIdDrive).setFields("id,name,parents,mimeType,size").execute();
 
-                    while(!folderDrive.getName().equals(StorageArguments.name)){
-                        apolutepath = "/" + folderDrive.getName() + apolutepath;
+                    while (!folderDrive.getName().equals(StorageArguments.name)) {
+                        apsoPath.insert(0, "/" + folderDrive.getName());
                         folderIdDrive = folderDrive.getParents().get(0);
                         folderDrive = service.files().get(folderIdDrive).setFields("id,name,parents,mimeType,size").execute();
                     }
-                    apolutepath = StorageArguments.name + apolutepath;
+                    apsoPath.insert(0, StorageArguments.name);
 
-                    if(!resultList.contains(apolutepath)){
-                        resultList.add(apolutepath);
+                    if (!resultList.contains(apsoPath.toString())) {
+                        resultList.add(apsoPath.toString());
                     }
-                    apolutepath = "";
-                }
-                catch (IOException e) {
+                    apsoPath = new StringBuilder();
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
 
-        String result ="Folders:\n";  //ispis svih apsolutnih putanja gde se sve nalazi file sa datim imenom
+        StringBuilder result = new StringBuilder("Folders:\n");  //ispis svih apsolutnih putanja gde se sve nalazi file sa datim imenom
 
-        for(String path : resultList){
-            result = result + path + "\n";
+        for (String path : resultList) {
+            result.append(path).append("\n");
         }
 
-        return result;
+        return result.toString();
     }
 
     @Override
-    public List<String> searchModifiedFilesInFolder(Date beginDate, Date endDate, String folderPath, TypeSort typeSort, TypeFilter typeFilter) {
+    public List<String> searchModifiedFilesInFolder(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>();
 
@@ -793,22 +769,17 @@ public class ImplementationDrive implements Storage {
 
         for (File file : files) {
             if (file.getParents() != null && file.getParents().contains(folderDriveId)) {
-                if ((file.getModifiedTime()).toString().compareTo(new DateTime(beginDate).toString()) >= 0 &&
+                if ((file.getModifiedTime()).toString().compareTo(new DateTime(startDate).toString()) >= 0 &&
                         (file.getModifiedTime()).toString().compareTo(new DateTime(endDate).toString()) <= 0) {
                     resultList.add(file.getId());
                 }
             }
         }
 
-        switch (typeFilter) {
-            case FILE_EXTENSION -> {
-                String ext = "html";
-                resultList = filterFilesByExt(resultList, typeFilter, ext);
-            }
-            case MODIFIED_DATE, CREATED_DATE -> {
-                Date d1 = new Date(2022 - 1900, Calendar.OCTOBER, 30);
-                Date d2 = new Date(2022 - 1900, Calendar.NOVEMBER, 1);
-                resultList = filterFilesByDate(resultList, typeFilter, d1, d2);
+        if (typeFilter != null) {
+            switch (typeFilter) {
+                case FILE_EXTENSION -> resultList = filterFilesByExt(resultList, typeFilter, fileExtension);
+                case MODIFIED_DATE, CREATED_DATE -> resultList = filterFilesByDate(resultList, typeFilter, startDate, endDate);
             }
         }
 
@@ -820,21 +791,21 @@ public class ImplementationDrive implements Storage {
     }
 
     /*-------------------------------------------------------------------------------------------------------------*/
-    private List<File> getFilesByName(String name,String nameAndMimeiType,Drive service){
-        List<File> files = new ArrayList<>();
+    private List<File> getFilesByName(String name, String nameAndMimeiType, Drive service) {
+        List<File> files;
 
-        try{
+        try {
             String pageToken = null;
             FileList result;
 
-            if(name.equals("")){
+            if (name.equals("")) {
                 result = service.files().list()
                         .setQ(nameAndMimeiType)
                         .setSpaces("drive")
                         .setFields("files(id,name,parents,mimeType,size)")
                         .setPageToken(pageToken)
                         .execute();
-            }else{
+            } else {
                 result = service.files().list()
                         .setQ(name)
                         .setSpaces("drive")
@@ -842,7 +813,7 @@ public class ImplementationDrive implements Storage {
                         .setPageToken(pageToken)
                         .execute();
             }
-            files.addAll(result.getFiles());
+            files = new ArrayList<>(result.getFiles());
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -850,39 +821,37 @@ public class ImplementationDrive implements Storage {
         return files;
     }
 
-    private String getFileId(String path, String mimeiType, Drive service){
-        if(path.equals("")){ //""
+    private String getFileId(String path, String mimeiType, Drive service) {
+        if (path.equals("")) { //""
             return StorageArguments.driveStorage_Id;
         }
 
         String[] folder = path.split("/");
         String parentId = StorageArguments.driveStorage_Id;
-        String currPath = StorageArguments.name;
+        StringBuilder currPath = Optional.ofNullable(StorageArguments.name).map(StringBuilder::new).orElse(null);
         boolean badPath = true;
 
-        for( int i = 0; i < folder.length; i++){
-            String name = "name='"+folder[i]+"'";
-            currPath = currPath +"/" +folder[i];
+        for (String s : folder) {
+            String name = "name='" + s + "'";
+            currPath = (currPath == null ? new StringBuilder("null") : currPath).append("/").append(s);
             ArrayList<File> files;
 
-            if(mimeiType!=""){
-                String nameAndMimeiType= name +" and mimeType='" + mimeiType +"'";
-                files = (ArrayList<File>) getFilesByName("",nameAndMimeiType,service);
+            if (!Objects.equals(mimeiType, "")) {
+                String nameAndMimeiType = name + " and mimeType='" + mimeiType + "'";
+                files = (ArrayList<File>) getFilesByName("", nameAndMimeiType, service);
 
-            }
-            else{
-                files = (ArrayList<File>) getFilesByName(name,"",service); //ovo vraca i fajlve i foldere sa datim imenom
+            } else {
+                files = (ArrayList<File>) getFilesByName(name, "", service); //ovo vraca i fajlve i foldere sa datim imenom
             }
 
-            for(int j = 0; j < files.size(); j++)
-            {
-                if(files.get(j).getParents().contains(parentId)){
-                    parentId=files.get(j).getId();
+            for (File file : files) {
+                if (file.getParents().contains(parentId)) {
+                    parentId = file.getId();
                     badPath = false;
                     break;
                 }
             }
-            if(badPath){
+            if (badPath) {
                 throw new CustomException("Action FAILED \t Check the path?\t " + currPath);
             }
             badPath = true;
@@ -893,25 +862,24 @@ public class ImplementationDrive implements Storage {
 
     private int getUsedSpaceInStorage(String folderPath) {
 
-        String folderDriveId = getFileId(folderPath,"application/vnd.google-apps.folder",service);
+        String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         int usedSpaceStorage = 0;
 
         List<String> listIdSubFolders = new ArrayList<>();
-        ArrayList<File> files = (ArrayList<File>) getFilesByName("","",service);
+        ArrayList<File> files = (ArrayList<File>) getFilesByName("", "", service);
 
         while (true) {
-            for (int i = 0; i < files.size(); i++) {
-                if (files.get(i).getParents() != null && files.get(i).getParents().contains(folderDriveId)) {
+            for (File file : files) {
+                if (file.getParents() != null && file.getParents().contains(folderDriveId)) {
 
-                    if (files.get(i).getMimeType().equals("application/vnd.google-apps.folder")) {
-                        listIdSubFolders.add(files.get(i).getId());
-                    }
-                    else {
-                        usedSpaceStorage = (int) (usedSpaceStorage + files.get(i).getSize());
+                    if (file.getMimeType().equals("application/vnd.google-apps.folder")) {
+                        listIdSubFolders.add(file.getId());
+                    } else {
+                        usedSpaceStorage = (int) (usedSpaceStorage + file.getSize());
                     }
                 }
             }
-            if(listIdSubFolders.isEmpty()) {
+            if (listIdSubFolders.isEmpty()) {
                 break;
             }
 
@@ -937,9 +905,11 @@ public class ImplementationDrive implements Storage {
             case ALPHABETICAL_ASC -> driveFiles.sort(Comparator.comparing(File::getName));
             case ALPHABETICAL_DESC -> driveFiles.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
             case CREATED_DATE_ASC -> driveFiles.sort(Comparator.comparing(o -> o.getCreatedTime().toString()));
-            case CREATED_DATE_DESC -> driveFiles.sort((o1, o2) -> o2.getCreatedTime().toString().compareTo(o1.getCreatedTime().toString()));
+            case CREATED_DATE_DESC ->
+                    driveFiles.sort((o1, o2) -> o2.getCreatedTime().toString().compareTo(o1.getCreatedTime().toString()));
             case MODIFIED_DATE_ASC -> driveFiles.sort(Comparator.comparing(o -> o.getModifiedTime().toString()));
-            case MODIFIED_DATE_DESC -> driveFiles.sort((o1, o2) -> o2.getModifiedTime().toString().compareTo(o1.getModifiedTime().toString()));
+            case MODIFIED_DATE_DESC ->
+                    driveFiles.sort((o1, o2) -> o2.getModifiedTime().toString().compareTo(o1.getModifiedTime().toString()));
         }
 
         files = new ArrayList<>();
@@ -975,7 +945,7 @@ public class ImplementationDrive implements Storage {
         return files;
     }
 
-    public List<String> filterFilesByDate(List<String> files, TypeFilter typeFilter, Date beginDate, Date endDate) {
+    public List<String> filterFilesByDate(List<String> files, TypeFilter typeFilter, String startDate, String endDate) {
         List<File> driveFiles = new ArrayList<>();
 
         for (String file : files) {
@@ -991,7 +961,7 @@ public class ImplementationDrive implements Storage {
         switch (typeFilter) {
             case CREATED_DATE -> {
                 for (File driveFile : driveFiles) {
-                    if ((driveFile.getModifiedTime()).toString().compareTo(new DateTime(beginDate).toString()) >= 0 &&
+                    if ((driveFile.getModifiedTime()).toString().compareTo(new DateTime(startDate).toString()) >= 0 &&
                             (driveFile.getModifiedTime()).toString().compareTo(new DateTime(endDate).toString()) <= 0) {
                         files.add(driveFile.getId());
                     }
@@ -999,7 +969,7 @@ public class ImplementationDrive implements Storage {
             }
             case MODIFIED_DATE -> {
                 for (File driveFile : driveFiles) {
-                    if ((driveFile.getCreatedTime()).toString().compareTo(new DateTime(beginDate).toString()) >= 0 &&
+                    if ((driveFile.getCreatedTime()).toString().compareTo(new DateTime(startDate).toString()) >= 0 &&
                             (driveFile.getCreatedTime()).toString().compareTo(new DateTime(endDate).toString()) <= 0) {
                         files.add(driveFile.getId());
                     }
@@ -1009,5 +979,4 @@ public class ImplementationDrive implements Storage {
 
         return files;
     }
-
 }
