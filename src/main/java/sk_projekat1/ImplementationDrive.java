@@ -350,6 +350,12 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean moveFile(String oldFilePath, String newFilePath) {
+        if(oldFilePath.equals(".")){
+            throw new CustomException("Action FAILED \t Storage can not be moved");
+        }
+        if(newFilePath.equals(".")){
+            newFilePath = "";
+        }
 
         //Proverava da li je dobra putanja, ako jeste uzima id poslednjeg parenta
         String oldFolderParentId = getFileId(oldFilePath, "", service);
@@ -409,6 +415,10 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean renameFileObject(String foNewName, String foPath) {
+        if(foPath.equals(".")){
+            foPath="";
+        }
+
         String[] folders = foPath.split("/");
         StringBuilder parentPath = Optional.ofNullable(folders[0]).map(StringBuilder::new).orElse(null);
 
@@ -447,6 +457,10 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean deleteFileObject(String foPath) {
+        if(foPath.equals(".")){
+            throw new CustomException("Action FAILED \t  Storage can not be deleted");
+        }
+
         String[] folders = foPath.split("/");
         String fileObjectId;
 
@@ -468,6 +482,11 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean importFileObject(String[] importLocalPaths, String importStoragePath) {
+
+        if(importStoragePath.equals(".")){
+            importStoragePath="";
+        }
+
         String driveFolderId = getFileId(importStoragePath, "", service);
         try {
             File driveFolder = service.files().get(driveFolderId).execute(); // folder u koji zelis da uploadas stvari
@@ -526,6 +545,11 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean exportFileObject(String exportStoragePath, String exportLocalPath) {
+
+        if(exportStoragePath.equals(".")){
+            exportStoragePath = "";
+        }
+
         String fileId = getFileId(exportStoragePath, "", service);
         java.io.File localFile = new java.io.File(exportLocalPath);
 
@@ -561,6 +585,10 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public List<String> searchFilesInFolder(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+
+        if(folderPath.equals(".")){
+            folderPath = "";
+        }
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //lista fajlova iz tog foldera
 
@@ -589,6 +617,11 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public List<String> searchFilesInFolders(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+
+        if(folderPath.equals(".")){
+            folderPath = "";
+        }
+
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //konacna lista svih fajlova
 
@@ -630,6 +663,10 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public List<String> searchFilesWithExtensionInFolder(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+        if(folderPath.equals(".")){
+            folderPath = "";
+        }
+
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //lista fajlova iz tog foldera
 
@@ -658,6 +695,10 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public List<String> searchFilesWithSubstringInFolder(String fileSubstring, String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+        if(folderPath.equals(".")){
+            folderPath = "";
+        }
+
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //lista fajlova iz tog foldera
 
@@ -687,6 +728,9 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean existsInFolder(String[] fileName, String folderPath) {
+        if(folderPath.equals(".")){
+            folderPath = "";
+        }
         String folderId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         boolean exists = false;
 
@@ -761,6 +805,11 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public List<String> searchModifiedFilesInFolder(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+
+        if(folderPath.equals(".")){
+            folderPath = "";
+        }
+
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>();
 
@@ -822,7 +871,7 @@ public class ImplementationDrive implements Storage {
     }
 
     private String getFileId(String path, String mimeiType, Drive service) {
-        if (path.equals("")) { //""
+        if (path.equals("")) {
             return StorageArguments.driveStorage_Id;
         }
 
