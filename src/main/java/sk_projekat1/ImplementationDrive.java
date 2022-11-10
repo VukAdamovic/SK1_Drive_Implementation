@@ -98,54 +98,50 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean setPath(String storageId) {
-        File storage = null;
-        try {
-            storage = service.files().get(storageId).setFields("id,name,parents,mimeType,size").execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+       List<File> driveList = getFilesByName("","",service);
         boolean operation = false;
+        boolean check = false;
 
-        if (storage == null) {
-            return false;
-        } else {
-            ArrayList<String> listFilesInStorage = (ArrayList<String>) searchFilesInFolder(".",null,null,null,null,null);
-            for (int i = 0; i < listFilesInStorage.size(); i++) {
-                String fileId = listFilesInStorage.get(i);
-
-                File file = null;
-                try {
-                    file = service.files().get(fileId).setFields("id,name,parents,mimeType,size").execute();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                if (file.getName().contains("_CONFIGURATION.txt")) {
-                    try {
-                        List<String> configAtributes = new ArrayList<>();
-                        java.io.File configFile = new java.io.File("D:/googleDriveFiles" , storage.getName()+"_CONFIGURATION.txt");
-                        Scanner myReader = new Scanner(configFile);
-
-                        while (myReader.hasNextLine()) {
-                            String line = myReader.nextLine();
-                            String[] value = line.split(":");
-                            configAtributes.add(value[1]);
-                        }
-
-                        StorageArguments.name = configAtributes.get(0);
-                        StorageArguments.path = storageId;
-                        StorageArguments.totalSpace = Integer.parseInt(configAtributes.get(1));
-                        StorageArguments.restrictedExtensions = Collections.singletonList(configAtributes.get(2));
-                        StorageArguments.maxFilesInStorage = Integer.parseInt(configAtributes.get(3));
-                        StorageArguments.usedSpace = getUsedSpaceInStorage(storageId);
-                        StorageArguments.fileNumberInStorage = searchFilesInFolders(".", null, null, null, null, null).size();
-                        operation = true;
-                    } catch (FileNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+        for (int i = 0 ; i < driveList.size(); i++){
+            File file = driveList.get(i);
+            if(file.getId().equals(storageId)){
+                check = true;
             }
         }
+        if (!check) {
+            return false;
+        } else {
+            File storage = null;
+            try {
+                storage = service.files().get(storageId).setFields("id,name,parents,mimeType,size").execute();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            try {
+                List<String> configAtributes = new ArrayList<>();
+                java.io.File configFile = new java.io.File("D:/googleDriveFiles" , storage.getName()+"_CONFIGURATION.txt");
+                Scanner myReader = new Scanner(configFile);
+
+                while (myReader.hasNextLine()) {
+                    String line = myReader.nextLine();
+                    String[] value = line.split(":");
+                    configAtributes.add(value[1]);
+                }
+
+                StorageArguments.name = configAtributes.get(0);
+                StorageArguments.driveStorage_Id = storageId;
+                StorageArguments.totalSpace = Integer.parseInt(configAtributes.get(1));
+                StorageArguments.restrictedExtensions = Collections.singletonList(configAtributes.get(2));
+                StorageArguments.maxFilesInStorage = Integer.parseInt(configAtributes.get(3));
+                StorageArguments.usedSpace = getUsedSpaceInStorage("");
+                StorageArguments.fileNumberInStorage = searchFilesInFolders(".", null, null, null, null, null).size();
+                operation = true;
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
 
         return operation;
     }
@@ -242,10 +238,10 @@ public class ImplementationDrive implements Storage {
         java.io.File localFile = new java.io.File("D:/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
         try {
             FileWriter fileWriter = new FileWriter(localFile);
-            fileWriter.write("Storage name: " + StorageArguments.path + "\n");
-            fileWriter.write("Storage size in bytes: " + StorageArguments.totalSpace + "\n");
-            fileWriter.write("Storage restricted extensions: " + StorageArguments.restrictedExtensions + "\n");
-            fileWriter.write("Storage max file size number: " + StorageArguments.maxFilesInStorage);
+            fileWriter.write("Storage name:" + StorageArguments.name + "\n");
+            fileWriter.write("Storage size in bytes:" + StorageArguments.totalSpace + "\n");
+            fileWriter.write("Storage restricted extensions:" + StorageArguments.restrictedExtensions + "\n");
+            fileWriter.write("Storage max file size number:" + StorageArguments.maxFilesInStorage);
             fileWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
