@@ -97,8 +97,8 @@ public class ImplementationDrive implements Storage {
     /*--------------------------------------------------------------------------------------*/
 
     @Override
-    public boolean setPath(String apsolutePath) {
-        java.io.File storage = new java.io.File(apsolutePath);
+    public boolean setPath(String absolutePath) {
+        java.io.File storage = new java.io.File(absolutePath);
         java.io.File configFile;
         boolean operation = false;
 
@@ -120,12 +120,12 @@ public class ImplementationDrive implements Storage {
                         }
 
                         StorageArguments.name = configAtributes.get(0);
-                        StorageArguments.path = apsolutePath;
+                        StorageArguments.path = absolutePath;
                         StorageArguments.totalSpace = Integer.parseInt(configAtributes.get(1));
                         StorageArguments.restrictedExtensions = Collections.singletonList(configAtributes.get(2));
                         StorageArguments.maxFilesInStorage = Integer.parseInt(configAtributes.get(3));
-                        StorageArguments.usedSpace = getUsedSpaceInStorage(apsolutePath);
-                        StorageArguments.fileNumberInStorage = searchFilesInFolders("", null, null, null, null, null).size();
+                        StorageArguments.usedSpace = getUsedSpaceInStorage(absolutePath);
+                        StorageArguments.fileNumberInStorage = searchFilesInFolders("", "null", "null", "null", "null", "null").size();
                         operation = true;
                     } catch (FileNotFoundException e) {
                         throw new RuntimeException(e);
@@ -272,8 +272,8 @@ public class ImplementationDrive implements Storage {
         String parentID = getFileId(folderPath, "", service);// pitaj
         for (File file : files) {
             if (file.getParents().contains(parentID) && file.getName().equals(folderName)) {
-                String apsoPath = StorageArguments.name + "/" + folderPath + "/" + folderName;
-                throw new CustomException("Action FAILED \t Folder: " + apsoPath + " already exists");
+                String absoPath = StorageArguments.name + "/" + folderPath + "/" + folderName;
+                throw new CustomException("Action FAILED \t Folder: " + absoPath + " already exists");
             }
         }
 
@@ -389,8 +389,8 @@ public class ImplementationDrive implements Storage {
         //Ako vec postoji fajl sa zadatim imenom na putanji na kojoj hocemo da premestimo
         for (File value : files) {
             if (value.getParents().contains(newFolderParentId) && value.getName().equals(targetName)) {
-                String apsoPath = StorageArguments.name + "/" + newFilePath + "/" + targetName;
-                throw new CustomException("Action FAILED \t File : " + apsoPath + " already exists");
+                String absoPath = StorageArguments.name + "/" + newFilePath + "/" + targetName;
+                throw new CustomException("Action FAILED \t File : " + absoPath + " already exists");
             }
         }
 
@@ -425,8 +425,8 @@ public class ImplementationDrive implements Storage {
 
         for (File file : files) {
             if (file.getParents().contains(parentFileObjectId) && file.getName().equals(foNewName)) {
-                String apsoPath = StorageArguments.name + "/" + parentPath + "/" + foNewName;
-                throw new CustomException("Action FAILED \t File : " + apsoPath + " already exists");
+                String absoPath = StorageArguments.name + "/" + parentPath + "/" + foNewName;
+                throw new CustomException("Action FAILED \t File : " + absoPath + " already exists");
             }
         }
 
@@ -473,8 +473,8 @@ public class ImplementationDrive implements Storage {
             File driveFolder = service.files().get(driveFolderId).execute(); // folder u koji zelis da uploadas stvari
 
             if (!driveFolder.getMimeType().equals("application/vnd.google-apps.folder")) { // proveravas da li je tipa folder
-                String apsoluthPath = StorageArguments.name + "/" + importStoragePath;
-                throw new CustomException("Action FAILED \t" + apsoluthPath + " is not a directory");
+                String absolutePath = StorageArguments.name + "/" + importStoragePath;
+                throw new CustomException("Action FAILED \t" + absolutePath + " is not a directory");
             }
 
             for (String importLocalPath : importLocalPaths) {
@@ -540,8 +540,8 @@ public class ImplementationDrive implements Storage {
             File fileOnDrive = service.files().get(fileId).setFields("name,mimeType").execute();
 
             if (fileOnDrive.getMimeType().equals("application/vnd.google-apps.folder")) {
-                String apsoluthPath = StorageArguments.name + "/" + exportStoragePath;
-                throw new CustomException("Action FAILED \t" + apsoluthPath + "\t Directory can not be download");
+                String absolutePath = StorageArguments.name + "/" + exportStoragePath;
+                throw new CustomException("Action FAILED \t" + absolutePath + "\t Directory can not be download");
             }
 
             java.io.File downloadedFile = new java.io.File(exportLocalPath, fileOnDrive.getName());
@@ -560,7 +560,7 @@ public class ImplementationDrive implements Storage {
     }
 
     @Override
-    public List<String> searchFilesInFolder(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+    public List<String> searchFilesInFolder(String folderPath, String typeSort, String typeFilter, String fileExtension, String startDate, String endDate) {
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //lista fajlova iz tog foldera
 
@@ -573,22 +573,26 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        if (typeFilter != null) {
-            switch (typeFilter) {
-                case FILE_EXTENSION -> resultList = filterFilesByExt(resultList, typeFilter, fileExtension);
-                case MODIFIED_DATE, CREATED_DATE -> resultList = filterFilesByDate(resultList, typeFilter, startDate, endDate);
-            }
+        switch (typeFilter) {
+            case "FILE_EXTENSION" -> resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+            case "MODIFIED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+            case "CREATED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
         }
 
-        if (typeSort != null) {
-            resultList = sortFiles(resultList, typeSort);
+        switch (typeSort) {
+            case "ALPHABETICAL_ASC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+            case "ALPHABETICAL_DESC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+            case "CREATED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+            case "CREATED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+            case "MODIFIED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+            case "MODIFIED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
         }
 
         return resultList;
     }
 
     @Override
-    public List<String> searchFilesInFolders(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+    public List<String> searchFilesInFolders(String folderPath, String typeSort, String typeFilter, String fileExtension, String startDate, String endDate) {
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //konacna lista svih fajlova
 
@@ -614,22 +618,27 @@ public class ImplementationDrive implements Storage {
             folderDriveId = listIdSubFolders.get(0); //uzimas sledeci subfolder da prodjes kroz njega
             listIdSubFolders.remove(folderDriveId); //brises njegov id iz liste
         }
-        if (typeFilter != null) {
-            switch (typeFilter) {
-                case FILE_EXTENSION -> resultList = filterFilesByExt(resultList, typeFilter, fileExtension);
-                case MODIFIED_DATE, CREATED_DATE -> resultList = filterFilesByDate(resultList, typeFilter, startDate, endDate);
-            }
+
+        switch (typeFilter) {
+            case "FILE_EXTENSION" -> resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+            case "MODIFIED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+            case "CREATED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
         }
 
-        if (typeSort != null) {
-            resultList = sortFiles(resultList, typeSort);
+        switch (typeSort) {
+            case "ALPHABETICAL_ASC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+            case "ALPHABETICAL_DESC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+            case "CREATED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+            case "CREATED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+            case "MODIFIED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+            case "MODIFIED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
         }
 
         return resultList;
     }
 
     @Override
-    public List<String> searchFilesWithExtensionInFolder(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+    public List<String> searchFilesWithExtensionInFolder(String folderPath, String typeSort, String typeFilter, String fileExtension, String startDate, String endDate) {
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //lista fajlova iz tog foldera
 
@@ -642,22 +651,26 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        if (typeFilter != null) {
-            switch (typeFilter) {
-                case FILE_EXTENSION -> resultList = filterFilesByExt(resultList, typeFilter, fileExtension);
-                case MODIFIED_DATE, CREATED_DATE -> resultList = filterFilesByDate(resultList, typeFilter, startDate, endDate);
-            }
+        switch (typeFilter) {
+            case "FILE_EXTENSION" -> resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+            case "MODIFIED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+            case "CREATED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
         }
 
-        if (typeSort != null) {
-            resultList = sortFiles(resultList, typeSort);
+        switch (typeSort) {
+            case "ALPHABETICAL_ASC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+            case "ALPHABETICAL_DESC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+            case "CREATED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+            case "CREATED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+            case "MODIFIED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+            case "MODIFIED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
         }
 
         return resultList;
     }
 
     @Override
-    public List<String> searchFilesWithSubstringInFolder(String fileSubstring, String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+    public List<String> searchFilesWithSubstringInFolder(String folderPath, String typeSort, String typeFilter, String fileSubstring, String fileExtension, String startDate, String endDate) {
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //lista fajlova iz tog foldera
 
@@ -671,22 +684,26 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        if (typeFilter != null) {
-            switch (typeFilter) {
-                case FILE_EXTENSION -> resultList = filterFilesByExt(resultList, typeFilter, fileExtension);
-                case MODIFIED_DATE, CREATED_DATE -> resultList = filterFilesByDate(resultList, typeFilter, startDate, endDate);
-            }
+        switch (typeFilter) {
+            case "FILE_EXTENSION" -> resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+            case "MODIFIED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+            case "CREATED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
         }
 
-        if (typeSort != null) {
-            resultList = sortFiles(resultList, typeSort);
+        switch (typeSort) {
+            case "ALPHABETICAL_ASC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+            case "ALPHABETICAL_DESC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+            case "CREATED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+            case "CREATED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+            case "MODIFIED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+            case "MODIFIED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
         }
 
         return resultList;
     }
 
     @Override
-    public boolean existsInFolder(String[] fileName, String folderPath) {
+    public boolean existsInFolder(String folderPath, String[] fileName) {
         String folderId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         boolean exists = false;
 
@@ -719,7 +736,7 @@ public class ImplementationDrive implements Storage {
         String nameAndMimeiType = name + " and mimeType!='application/vnd.google-apps.folder'";
         ArrayList<File> files = (ArrayList<File>) getFilesByName("", nameAndMimeiType, service);
         String folderIdDrive;
-        StringBuilder apsoPath = new StringBuilder();
+        StringBuilder absoPath = new StringBuilder();
         List<String> resultList = new ArrayList<>(); // pravim listu zbog bin foldera
 
         //ako je prazan files baci da ne postoji fajl
@@ -728,22 +745,22 @@ public class ImplementationDrive implements Storage {
         }
 
         for (File file : files) {
-            if (file.getName().equals(fileName) && !(file.getParents().equals(null))) {
+            if (file.getName().equals(fileName) && file.getParents() != null) {
                 folderIdDrive = file.getParents().get(0);
                 try {
                     File folderDrive = service.files().get(folderIdDrive).setFields("id,name,parents,mimeType,size").execute();
 
                     while (!folderDrive.getName().equals(StorageArguments.name)) {
-                        apsoPath.insert(0, "/" + folderDrive.getName());
+                        absoPath.insert(0, "/" + folderDrive.getName());
                         folderIdDrive = folderDrive.getParents().get(0);
                         folderDrive = service.files().get(folderIdDrive).setFields("id,name,parents,mimeType,size").execute();
                     }
-                    apsoPath.insert(0, StorageArguments.name);
+                    absoPath.insert(0, StorageArguments.name);
 
-                    if (!resultList.contains(apsoPath.toString())) {
-                        resultList.add(apsoPath.toString());
+                    if (!resultList.contains(absoPath.toString())) {
+                        resultList.add(absoPath.toString());
                     }
-                    apsoPath = new StringBuilder();
+                    absoPath = new StringBuilder();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -760,7 +777,7 @@ public class ImplementationDrive implements Storage {
     }
 
     @Override
-    public List<String> searchModifiedFilesInFolder(String folderPath, String fileExtension, String startDate, String endDate, TypeSort typeSort, TypeFilter typeFilter) {
+    public List<String> searchModifiedFilesInFolder(String folderPath, String typeSort, String typeFilter, String fileExtension, String startDate, String endDate) {
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>();
 
@@ -776,15 +793,19 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        if (typeFilter != null) {
-            switch (typeFilter) {
-                case FILE_EXTENSION -> resultList = filterFilesByExt(resultList, typeFilter, fileExtension);
-                case MODIFIED_DATE, CREATED_DATE -> resultList = filterFilesByDate(resultList, typeFilter, startDate, endDate);
-            }
+        switch (typeFilter) {
+            case "FILE_EXTENSION" -> resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+            case "MODIFIED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+            case "CREATED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
         }
 
-        if (typeSort != null) {
-            resultList = sortFiles(resultList, typeSort);
+        switch (typeSort) {
+            case "ALPHABETICAL_ASC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+            case "ALPHABETICAL_DESC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+            case "CREATED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+            case "CREATED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+            case "MODIFIED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+            case "MODIFIED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
         }
 
         return resultList;
@@ -861,7 +882,6 @@ public class ImplementationDrive implements Storage {
     }
 
     private int getUsedSpaceInStorage(String folderPath) {
-
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         int usedSpaceStorage = 0;
 
@@ -890,6 +910,7 @@ public class ImplementationDrive implements Storage {
     }
 
     /*-------------------------------------------------------------------------------------------------------------*/
+
     public List<String> sortFiles(List<String> files, TypeSort typeSort) {
         List<File> driveFiles = new ArrayList<>();
 
