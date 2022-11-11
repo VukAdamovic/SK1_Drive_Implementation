@@ -574,18 +574,51 @@ public class ImplementationDrive implements Storage {
         }
 
         switch (typeFilter) {
-            case "FILE_EXTENSION" -> resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
-            case "MODIFIED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
-            case "CREATED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+            case "FILE_EXTENSION": {
+                resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+                break;
+            }
+            case "MODIFIED_DATE": {
+                resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+                break;
+            }
+            case "CREATED_DATE": {
+                resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         switch (typeSort) {
-            case "ALPHABETICAL_ASC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-            case "ALPHABETICAL_DESC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-            case "CREATED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-            case "CREATED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-            case "MODIFIED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-            case "MODIFIED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+            case "ALPHABETICAL_ASC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                break;
+            }
+            case "ALPHABETICAL_DESC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                break;
+            }
+            case "CREATED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                break;
+            }
+            case "CREATED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                break;
+            }
+            case "MODIFIED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                break;
+            }
+            case "MODIFIED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         return resultList;
@@ -620,18 +653,51 @@ public class ImplementationDrive implements Storage {
         }
 
         switch (typeFilter) {
-            case "FILE_EXTENSION" -> resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
-            case "MODIFIED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
-            case "CREATED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+            case "FILE_EXTENSION": {
+                resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+                break;
+            }
+            case "MODIFIED_DATE": {
+                resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+                break;
+            }
+            case "CREATED_DATE": {
+                resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         switch (typeSort) {
-            case "ALPHABETICAL_ASC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-            case "ALPHABETICAL_DESC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-            case "CREATED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-            case "CREATED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-            case "MODIFIED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-            case "MODIFIED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+            case "ALPHABETICAL_ASC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                break;
+            }
+            case "ALPHABETICAL_DESC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                break;
+            }
+            case "CREATED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                break;
+            }
+            case "CREATED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                break;
+            }
+            case "MODIFIED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                break;
+            }
+            case "MODIFIED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         return resultList;
@@ -652,18 +718,51 @@ public class ImplementationDrive implements Storage {
         }
 
         switch (typeFilter) {
-            case "FILE_EXTENSION" -> resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
-            case "MODIFIED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
-            case "CREATED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+            case "FILE_EXTENSION": {
+                resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+                break;
+            }
+            case "MODIFIED_DATE": {
+                resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+                break;
+            }
+            case "CREATED_DATE": {
+                resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         switch (typeSort) {
-            case "ALPHABETICAL_ASC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-            case "ALPHABETICAL_DESC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-            case "CREATED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-            case "CREATED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-            case "MODIFIED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-            case "MODIFIED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+            case "ALPHABETICAL_ASC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                break;
+            }
+            case "ALPHABETICAL_DESC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                break;
+            }
+            case "CREATED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                break;
+            }
+            case "CREATED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                break;
+            }
+            case "MODIFIED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                break;
+            }
+            case "MODIFIED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         return resultList;
@@ -685,18 +784,51 @@ public class ImplementationDrive implements Storage {
         }
 
         switch (typeFilter) {
-            case "FILE_EXTENSION" -> resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
-            case "MODIFIED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
-            case "CREATED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+            case "FILE_EXTENSION": {
+                resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+                break;
+            }
+            case "MODIFIED_DATE": {
+                resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+                break;
+            }
+            case "CREATED_DATE": {
+                resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         switch (typeSort) {
-            case "ALPHABETICAL_ASC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-            case "ALPHABETICAL_DESC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-            case "CREATED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-            case "CREATED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-            case "MODIFIED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-            case "MODIFIED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+            case "ALPHABETICAL_ASC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                break;
+            }
+            case "ALPHABETICAL_DESC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                break;
+            }
+            case "CREATED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                break;
+            }
+            case "CREATED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                break;
+            }
+            case "MODIFIED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                break;
+            }
+            case "MODIFIED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         return resultList;
@@ -794,18 +926,51 @@ public class ImplementationDrive implements Storage {
         }
 
         switch (typeFilter) {
-            case "FILE_EXTENSION" -> resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
-            case "MODIFIED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
-            case "CREATED_DATE" -> resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+            case "FILE_EXTENSION": {
+                resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+                break;
+            }
+            case "MODIFIED_DATE": {
+                resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+                break;
+            }
+            case "CREATED_DATE": {
+                resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         switch (typeSort) {
-            case "ALPHABETICAL_ASC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-            case "ALPHABETICAL_DESC" -> resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-            case "CREATED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-            case "CREATED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-            case "MODIFIED_DATE_ASC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-            case "MODIFIED_DATE_DESC" -> resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+            case "ALPHABETICAL_ASC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                break;
+            }
+            case "ALPHABETICAL_DESC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                break;
+            }
+            case "CREATED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                break;
+            }
+            case "CREATED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                break;
+            }
+            case "MODIFIED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                break;
+            }
+            case "MODIFIED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         return resultList;
@@ -923,14 +1088,33 @@ public class ImplementationDrive implements Storage {
         }
 
         switch (typeSort) {
-            case ALPHABETICAL_ASC -> driveFiles.sort(Comparator.comparing(File::getName));
-            case ALPHABETICAL_DESC -> driveFiles.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
-            case CREATED_DATE_ASC -> driveFiles.sort(Comparator.comparing(o -> o.getCreatedTime().toString()));
-            case CREATED_DATE_DESC ->
-                    driveFiles.sort((o1, o2) -> o2.getCreatedTime().toString().compareTo(o1.getCreatedTime().toString()));
-            case MODIFIED_DATE_ASC -> driveFiles.sort(Comparator.comparing(o -> o.getModifiedTime().toString()));
-            case MODIFIED_DATE_DESC ->
-                    driveFiles.sort((o1, o2) -> o2.getModifiedTime().toString().compareTo(o1.getModifiedTime().toString()));
+            case ALPHABETICAL_ASC: {
+                driveFiles.sort(Comparator.comparing(File::getName));
+                break;
+            }
+            case ALPHABETICAL_DESC: {
+                driveFiles.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
+                break;
+            }
+            case CREATED_DATE_ASC: {
+                driveFiles.sort(Comparator.comparing(o -> o.getCreatedTime().toString()));
+                break;
+            }
+            case CREATED_DATE_DESC : {
+                driveFiles.sort((o1, o2) -> o2.getCreatedTime().toString().compareTo(o1.getCreatedTime().toString()));
+                break;
+            }
+            case MODIFIED_DATE_ASC: {
+                driveFiles.sort(Comparator.comparing(o -> o.getModifiedTime().toString()));
+                break;
+            }
+            case MODIFIED_DATE_DESC : {
+                driveFiles.sort((o1, o2) -> o2.getModifiedTime().toString().compareTo(o1.getModifiedTime().toString()));
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         files = new ArrayList<>();
@@ -980,21 +1164,23 @@ public class ImplementationDrive implements Storage {
         files = new ArrayList<>();
 
         switch (typeFilter) {
-            case CREATED_DATE -> {
+            case CREATED_DATE: {
                 for (File driveFile : driveFiles) {
                     if ((driveFile.getModifiedTime()).toString().compareTo(new DateTime(startDate).toString()) >= 0 &&
                             (driveFile.getModifiedTime()).toString().compareTo(new DateTime(endDate).toString()) <= 0) {
                         files.add(driveFile.getId());
                     }
                 }
+                break;
             }
-            case MODIFIED_DATE -> {
+            case MODIFIED_DATE: {
                 for (File driveFile : driveFiles) {
                     if ((driveFile.getCreatedTime()).toString().compareTo(new DateTime(startDate).toString()) >= 0 &&
                             (driveFile.getCreatedTime()).toString().compareTo(new DateTime(endDate).toString()) <= 0) {
                         files.add(driveFile.getId());
                     }
                 }
+                break;
             }
         }
 
