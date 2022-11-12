@@ -136,7 +136,7 @@ public class ImplementationDrive implements Storage {
                 StorageArguments.restrictedExtensions = Collections.singletonList(configAtributes.get(2));
                 StorageArguments.maxFilesInStorage = Integer.parseInt(configAtributes.get(3));
                 StorageArguments.usedSpace = getUsedSpaceInStorage("");
-                StorageArguments.fileNumberInStorage = searchFilesInFolders(".", null, null, null, null, null).size();
+                StorageArguments.fileNumberInStorage = searchFilesInFolders(".", "", "", "", "", "").size();
                 operation = true;
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
