@@ -53,8 +53,7 @@ public class ImplementationDrive implements Storage {
     private static final List<String> SCOPES =
             Arrays.asList(DriveScopes.DRIVE, DriveScopes.DRIVE_APPDATA, DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_METADATA, DriveScopes.DRIVE_SCRIPTS);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
-    //    private static final String CREDENTIALS_FILE_PATH = "/andrej.json";
-
+//    private static final String CREDENTIALS_FILE_PATH = "/andrej.json";
 
     public ImplementationDrive() throws GeneralSecurityException, IOException {
     }
@@ -99,20 +98,20 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean setPath(String storageId) {
-        List<File> driveList = getFilesByName("","",service);
-        boolean operation = false;
+        List<File> driveList = getFilesByName("", "", service);
+        boolean operation;
         boolean check = false;
 
-        for (int i = 0 ; i < driveList.size(); i++){
-            File file = driveList.get(i);
-            if(file.getId().equals(storageId)){
+        for (File file : driveList) {
+            if (file.getId().equals(storageId)) {
                 check = true;
+                break;
             }
         }
         if (!check) {
             return false;
         } else {
-            File storage = null;
+            File storage;
             try {
                 storage = service.files().get(storageId).setFields("id,name,parents,mimeType,size").execute();
             } catch (IOException e) {
@@ -121,7 +120,8 @@ public class ImplementationDrive implements Storage {
 
             try {
                 List<String> configAtributes = new ArrayList<>();
-                java.io.File configFile = new java.io.File("D:/googleDriveFiles" , storage.getName()+"_CONFIGURATION.txt");
+                java.io.File configFile = new java.io.File("D:/googleDriveFiles", storage.getName() + "_CONFIGURATION.txt");
+//                java.io.File configFile = new java.io.File("/Users/adjenadic/googleDriveFiles", storage.getName() + "_CONFIGURATION.txt");
                 Scanner myReader = new Scanner(configFile);
 
                 while (myReader.hasNextLine()) {
@@ -142,7 +142,6 @@ public class ImplementationDrive implements Storage {
                 throw new RuntimeException(e);
             }
         }
-
 
         return operation;
     }
@@ -176,9 +175,9 @@ public class ImplementationDrive implements Storage {
             throw new RuntimeException(e);
         }
 
-
         // Kreiranje lokalnog file
         java.io.File localFile = new java.io.File("D:/googleDriveFiles", storageName + "_Configuration.txt");
+//        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles", storageName + "_Configuration.txt");
         try {
             FileWriter fileWriter = new FileWriter(localFile);
             fileWriter.write("Storage name:" + storageName + "\n");
@@ -237,6 +236,7 @@ public class ImplementationDrive implements Storage {
 
         // Kreiranje lokalnog file
         java.io.File localFile = new java.io.File("D:/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
+//        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
         try {
             FileWriter fileWriter = new FileWriter(localFile);
             fileWriter.write("Storage name:" + StorageArguments.name + "\n");
@@ -336,6 +336,8 @@ public class ImplementationDrive implements Storage {
         fileMetadata.setName(fileName);
         fileMetadata.setParents(Collections.singletonList(parentID));
         java.io.File localFile = new java.io.File("D:/googleDriveFiles/testSizeStorage.txt"); //zbog testiranja
+//        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles/testSizeStorage.txt");
+
         FileContent fileContent = new FileContent("txt/txt", localFile);
 
         try {
@@ -360,10 +362,10 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean moveFile(String oldFilePath, String newFilePath) {
-        if(oldFilePath.equals(".")){
+        if (oldFilePath.equals(".")) {
             throw new CustomException("Action FAILED \t Storage can not be moved");
         }
-        if(newFilePath.equals(".")){
+        if (newFilePath.equals(".")) {
             newFilePath = "";
         }
 
@@ -425,8 +427,8 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean renameFileObject(String foNewName, String foPath) {
-        if(foPath.equals(".")){
-            foPath="";
+        if (foPath.equals(".")) {
+            foPath = "";
         }
 
         String[] folders = foPath.split("/");
@@ -467,7 +469,7 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean deleteFileObject(String foPath) {
-        if(foPath.equals(".")){
+        if (foPath.equals(".")) {
             throw new CustomException("Action FAILED \t  Storage can not be deleted");
         }
 
@@ -492,8 +494,8 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean importFileObject(String[] importLocalPaths, String importStoragePath) {
-        if(importStoragePath.equals(".")){
-            importStoragePath="";
+        if (importStoragePath.equals(".")) {
+            importStoragePath = "";
         }
 
         String driveFolderId = getFileId(importStoragePath, "", service);
@@ -555,7 +557,7 @@ public class ImplementationDrive implements Storage {
     @Override
     public boolean exportFileObject(String exportStoragePath, String exportLocalPath) {
 
-        if(exportStoragePath.equals(".")){
+        if (exportStoragePath.equals(".")) {
             exportStoragePath = "";
         }
         String fileId = getFileId(exportStoragePath, "", service);
@@ -593,7 +595,7 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public List<String> searchFilesInFolder(String folderPath, String typeSort, String typeFilter, String fileExtension, String startDate, String endDate) {
-        if(folderPath.equals(".")){
+        if (folderPath.equals(".")) {
             folderPath = "";
         }
 
@@ -609,52 +611,58 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        switch (typeFilter) {
-            case "FILE_EXTENSION": {
-                resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
-                break;
-            }
-            case "MODIFIED_DATE": {
-                resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
-                break;
-            }
-            case "CREATED_DATE": {
-                resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
-                break;
-            }
-            default: {
-                break;
+        if (typeFilter != null) {
+            switch (typeFilter) {
+                case "FILE_EXTENSION": {
+                    resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+                    break;
+                }
+                case "MODIFIED_DATE": {
+                    resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+                    break;
+                }
+                case "CREATED_DATE": {
+                    resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
 
-        switch (typeSort) {
-            case "ALPHABETICAL_ASC": {
-                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-                break;
+        if (typeSort != null) {
+            switch (typeSort) {
+                case "ALPHABETICAL_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                    break;
+                }
+                case "ALPHABETICAL_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                    break;
+                }
+                case "CREATED_DATE_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                    break;
+                }
+                case "CREATED_DATE_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                    break;
+                }
+                case "MODIFIED_DATE_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                    break;
+                }
+                case "MODIFIED_DATE_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
-            case "ALPHABETICAL_DESC": {
-                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-                break;
-            }
-            case "CREATED_DATE_ASC": {
-                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-                break;
-            }
-            case "CREATED_DATE_DESC": {
-                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-                break;
-            }
-            case "MODIFIED_DATE_ASC": {
-                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-                break;
-            }
-            case "MODIFIED_DATE_DESC": {
-                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
-                break;
-            }
-            default: {
-                break;
-            }
+        } else {
+            resultList = sortFiles(resultList, null);
         }
 
         return resultList;
@@ -663,7 +671,7 @@ public class ImplementationDrive implements Storage {
     @Override
     public List<String> searchFilesInFolders(String folderPath, String typeSort, String typeFilter, String fileExtension, String startDate, String endDate) {
 
-        if(folderPath.equals(".")){
+        if (folderPath.equals(".")) {
             folderPath = "";
         }
 
@@ -681,7 +689,7 @@ public class ImplementationDrive implements Storage {
                     if (file.getMimeType().equals("application/vnd.google-apps.folder")) {
                         listIdSubFolders.add(file.getId());
                     } else {
-                        resultList.add(file.getId());//
+                        resultList.add(file.getId());
                     }
                 }
             }
@@ -693,51 +701,55 @@ public class ImplementationDrive implements Storage {
             listIdSubFolders.remove(folderDriveId); //brises njegov id iz liste
         }
 
-        switch (typeFilter) {
-            case "FILE_EXTENSION": {
-                resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
-                break;
-            }
-            case "MODIFIED_DATE": {
-                resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
-                break;
-            }
-            case "CREATED_DATE": {
-                resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
-                break;
-            }
-            default: {
-                break;
+        if (typeFilter != null) {
+            switch (typeFilter) {
+                case "FILE_EXTENSION": {
+                    resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+                    break;
+                }
+                case "MODIFIED_DATE": {
+                    resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+                    break;
+                }
+                case "CREATED_DATE": {
+                    resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
 
-        switch (typeSort) {
-            case "ALPHABETICAL_ASC": {
-                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-                break;
-            }
-            case "ALPHABETICAL_DESC": {
-                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-                break;
-            }
-            case "CREATED_DATE_ASC": {
-                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-                break;
-            }
-            case "CREATED_DATE_DESC": {
-                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-                break;
-            }
-            case "MODIFIED_DATE_ASC": {
-                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-                break;
-            }
-            case "MODIFIED_DATE_DESC": {
-                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
-                break;
-            }
-            default: {
-                break;
+        if (typeSort != null) {
+            switch (typeSort) {
+                case "ALPHABETICAL_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                    break;
+                }
+                case "ALPHABETICAL_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                    break;
+                }
+                case "CREATED_DATE_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                    break;
+                }
+                case "CREATED_DATE_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                    break;
+                }
+                case "MODIFIED_DATE_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                    break;
+                }
+                case "MODIFIED_DATE_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
 
@@ -746,7 +758,7 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public List<String> searchFilesWithExtensionInFolder(String folderPath, String typeSort, String typeFilter, String fileExtension, String startDate, String endDate) {
-        if(folderPath.equals(".")){
+        if (folderPath.equals(".")) {
             folderPath = "";
         }
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
@@ -761,52 +773,58 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        switch (typeFilter) {
-            case "FILE_EXTENSION": {
-                resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
-                break;
-            }
-            case "MODIFIED_DATE": {
-                resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
-                break;
-            }
-            case "CREATED_DATE": {
-                resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
-                break;
-            }
-            default: {
-                break;
+        if (typeFilter != null) {
+            switch (typeFilter) {
+                case "FILE_EXTENSION": {
+                    resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+                    break;
+                }
+                case "MODIFIED_DATE": {
+                    resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+                    break;
+                }
+                case "CREATED_DATE": {
+                    resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
 
-        switch (typeSort) {
-            case "ALPHABETICAL_ASC": {
-                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-                break;
+        if (typeSort != null) {
+            switch (typeSort) {
+                case "ALPHABETICAL_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                    break;
+                }
+                case "ALPHABETICAL_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                    break;
+                }
+                case "CREATED_DATE_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                    break;
+                }
+                case "CREATED_DATE_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                    break;
+                }
+                case "MODIFIED_DATE_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                    break;
+                }
+                case "MODIFIED_DATE_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
-            case "ALPHABETICAL_DESC": {
-                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-                break;
-            }
-            case "CREATED_DATE_ASC": {
-                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-                break;
-            }
-            case "CREATED_DATE_DESC": {
-                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-                break;
-            }
-            case "MODIFIED_DATE_ASC": {
-                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-                break;
-            }
-            case "MODIFIED_DATE_DESC": {
-                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
-                break;
-            }
-            default: {
-                break;
-            }
+        } else {
+            resultList = sortFiles(resultList, null);
         }
 
         return resultList;
@@ -814,7 +832,7 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public List<String> searchFilesWithSubstringInFolder(String folderPath, String typeSort, String typeFilter, String fileSubstring, String fileExtension, String startDate, String endDate) {
-        if(folderPath.equals(".")){
+        if (folderPath.equals(".")) {
             folderPath = "";
         }
 
@@ -831,52 +849,58 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        switch (typeFilter) {
-            case "FILE_EXTENSION": {
-                resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
-                break;
-            }
-            case "MODIFIED_DATE": {
-                resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
-                break;
-            }
-            case "CREATED_DATE": {
-                resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
-                break;
-            }
-            default: {
-                break;
+        if (typeFilter != null) {
+            switch (typeFilter) {
+                case "FILE_EXTENSION": {
+                    resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+                    break;
+                }
+                case "MODIFIED_DATE": {
+                    resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+                    break;
+                }
+                case "CREATED_DATE": {
+                    resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
 
-        switch (typeSort) {
-            case "ALPHABETICAL_ASC": {
-                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-                break;
+        if (typeSort != null) {
+            switch (typeSort) {
+                case "ALPHABETICAL_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                    break;
+                }
+                case "ALPHABETICAL_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                    break;
+                }
+                case "CREATED_DATE_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                    break;
+                }
+                case "CREATED_DATE_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                    break;
+                }
+                case "MODIFIED_DATE_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                    break;
+                }
+                case "MODIFIED_DATE_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
-            case "ALPHABETICAL_DESC": {
-                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-                break;
-            }
-            case "CREATED_DATE_ASC": {
-                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-                break;
-            }
-            case "CREATED_DATE_DESC": {
-                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-                break;
-            }
-            case "MODIFIED_DATE_ASC": {
-                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-                break;
-            }
-            case "MODIFIED_DATE_DESC": {
-                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
-                break;
-            }
-            default: {
-                break;
-            }
+        } else {
+            resultList = sortFiles(resultList, null);
         }
 
         return resultList;
@@ -884,7 +908,7 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public boolean existsInFolder(String folderPath, String[] fileName) {
-        if(folderPath.equals(".")){
+        if (folderPath.equals(".")) {
             folderPath = "";
         }
         String folderId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
@@ -962,7 +986,7 @@ public class ImplementationDrive implements Storage {
     @Override
     public List<String> searchModifiedFilesInFolder(String folderPath, String typeSort, String typeFilter, String fileExtension, String startDate, String endDate) {
 
-        if(folderPath.equals(".")){
+        if (folderPath.equals(".")) {
             folderPath = "";
         }
 
@@ -981,52 +1005,58 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        switch (typeFilter) {
-            case "FILE_EXTENSION": {
-                resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
-                break;
-            }
-            case "MODIFIED_DATE": {
-                resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
-                break;
-            }
-            case "CREATED_DATE": {
-                resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
-                break;
-            }
-            default: {
-                break;
+        if (typeFilter != null) {
+            switch (typeFilter) {
+                case "FILE_EXTENSION": {
+                    resultList = filterFilesByExt(resultList, TypeFilter.FILE_EXTENSION, fileExtension);
+                    break;
+                }
+                case "MODIFIED_DATE": {
+                    resultList = filterFilesByDate(resultList, TypeFilter.MODIFIED_DATE, startDate, endDate);
+                    break;
+                }
+                case "CREATED_DATE": {
+                    resultList = filterFilesByDate(resultList, TypeFilter.CREATED_DATE, startDate, endDate);
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
 
-        switch (typeSort) {
-            case "ALPHABETICAL_ASC": {
-                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-                break;
+        if (typeSort != null) {
+            switch (typeSort) {
+                case "ALPHABETICAL_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                    break;
+                }
+                case "ALPHABETICAL_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                    break;
+                }
+                case "CREATED_DATE_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                    break;
+                }
+                case "CREATED_DATE_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                    break;
+                }
+                case "MODIFIED_DATE_ASC": {
+                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                    break;
+                }
+                case "MODIFIED_DATE_DESC": {
+                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
-            case "ALPHABETICAL_DESC": {
-                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-                break;
-            }
-            case "CREATED_DATE_ASC": {
-                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-                break;
-            }
-            case "CREATED_DATE_DESC": {
-                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-                break;
-            }
-            case "MODIFIED_DATE_ASC": {
-                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-                break;
-            }
-            case "MODIFIED_DATE_DESC": {
-                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
-                break;
-            }
-            default: {
-                break;
-            }
+        } else {
+            resultList = sortFiles(resultList, null);
         }
 
         return resultList;
@@ -1143,39 +1173,42 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        switch (typeSort) {
-            case ALPHABETICAL_ASC: {
-                driveFiles.sort(Comparator.comparing(File::getName));
-                break;
-            }
-            case ALPHABETICAL_DESC: {
-                driveFiles.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
-                break;
-            }
-            case CREATED_DATE_ASC: {
-                driveFiles.sort(Comparator.comparing(o -> o.getCreatedTime().toString()));
-                break;
-            }
-            case CREATED_DATE_DESC : {
-                driveFiles.sort((o1, o2) -> o2.getCreatedTime().toString().compareTo(o1.getCreatedTime().toString()));
-                break;
-            }
-            case MODIFIED_DATE_ASC: {
-                driveFiles.sort(Comparator.comparing(o -> o.getModifiedTime().toString()));
-                break;
-            }
-            case MODIFIED_DATE_DESC : {
-                driveFiles.sort((o1, o2) -> o2.getModifiedTime().toString().compareTo(o1.getModifiedTime().toString()));
-                break;
-            }
-            default: {
-                break;
+        if (typeSort != null) {
+            switch (typeSort) {
+                case ALPHABETICAL_ASC: {
+                    driveFiles.sort(Comparator.comparing(File::getName));
+                    break;
+                }
+                case ALPHABETICAL_DESC: {
+                    driveFiles.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
+                    break;
+                }
+                case CREATED_DATE_ASC: {
+                    driveFiles.sort(Comparator.comparing(o -> o.getCreatedTime().toString()));
+                    break;
+                }
+                case CREATED_DATE_DESC: {
+                    driveFiles.sort((o1, o2) -> o2.getCreatedTime().toString().compareTo(o1.getCreatedTime().toString()));
+                    break;
+                }
+                case MODIFIED_DATE_ASC: {
+                    driveFiles.sort(Comparator.comparing(o -> o.getModifiedTime().toString()));
+                    break;
+                }
+                case MODIFIED_DATE_DESC: {
+                    driveFiles.sort((o1, o2) -> o2.getModifiedTime().toString().compareTo(o1.getModifiedTime().toString()));
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
 
         files = new ArrayList<>();
 
         for (File driveFile : driveFiles) {
+            files.add("AAAAA");
             files.add(driveFile.getId());
         }
 
