@@ -52,8 +52,8 @@ public class ImplementationDrive implements Storage {
      */
     private static final List<String> SCOPES =
             Arrays.asList(DriveScopes.DRIVE, DriveScopes.DRIVE_APPDATA, DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_METADATA, DriveScopes.DRIVE_SCRIPTS);
-    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
-//    private static final String CREDENTIALS_FILE_PATH = "/andrej.json";
+    //    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+    private static final String CREDENTIALS_FILE_PATH = "/andrej.json";
 
     public ImplementationDrive() throws GeneralSecurityException, IOException {
     }
@@ -120,8 +120,8 @@ public class ImplementationDrive implements Storage {
 
             try {
                 List<String> configAtributes = new ArrayList<>();
-                java.io.File configFile = new java.io.File("D:/googleDriveFiles", storage.getName() + "_CONFIGURATION.txt");
-//                java.io.File configFile = new java.io.File("/Users/adjenadic/googleDriveFiles", storage.getName() + "_CONFIGURATION.txt");
+//                java.io.File configFile = new java.io.File("D:/googleDriveFiles", storage.getName() + "_CONFIGURATION.txt");
+                java.io.File configFile = new java.io.File("/Users/adjenadic/googleDriveFiles", storage.getName() + "_CONFIGURATION.txt");
                 Scanner myReader = new Scanner(configFile);
 
                 while (myReader.hasNextLine()) {
@@ -176,8 +176,8 @@ public class ImplementationDrive implements Storage {
         }
 
         // Kreiranje lokalnog file
-        java.io.File localFile = new java.io.File("D:/googleDriveFiles", storageName + "_Configuration.txt");
-//        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles", storageName + "_Configuration.txt");
+//        java.io.File localFile = new java.io.File("D:/googleDriveFiles", storageName + "_Configuration.txt");
+        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles", storageName + "_Configuration.txt");
         try {
             FileWriter fileWriter = new FileWriter(localFile);
             fileWriter.write("Storage name:" + storageName + "\n");
@@ -235,8 +235,8 @@ public class ImplementationDrive implements Storage {
         }
 
         // Kreiranje lokalnog file
-        java.io.File localFile = new java.io.File("D:/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
-//        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
+//        java.io.File localFile = new java.io.File("D:/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
+        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
         try {
             FileWriter fileWriter = new FileWriter(localFile);
             fileWriter.write("Storage name:" + StorageArguments.name + "\n");
@@ -335,8 +335,8 @@ public class ImplementationDrive implements Storage {
         File fileMetadata = new File();
         fileMetadata.setName(fileName);
         fileMetadata.setParents(Collections.singletonList(parentID));
-        java.io.File localFile = new java.io.File("D:/googleDriveFiles/testSizeStorage.txt"); //zbog testiranja
-//        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles/testSizeStorage.txt");
+//        java.io.File localFile = new java.io.File("D:/googleDriveFiles/testSizeStorage.txt"); //zbog testiranja
+        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles/testSizeStorage.txt");
 
         FileContent fileContent = new FileContent("txt/txt", localFile);
 
@@ -631,38 +631,35 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        if (typeSort != null) {
-            switch (typeSort) {
-                case "ALPHABETICAL_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-                    break;
-                }
-                case "ALPHABETICAL_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-                    break;
-                }
-                case "CREATED_DATE_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-                    break;
-                }
-                case "CREATED_DATE_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-                    break;
-                }
-                case "MODIFIED_DATE_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-                    break;
-                }
-                case "MODIFIED_DATE_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
-                    break;
-                }
-                default: {
-                    break;
-                }
+        switch (typeSort) {
+            case "ALPHABETICAL_ASC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                break;
             }
-        } else {
-            resultList = sortFiles(resultList, null);
+            case "ALPHABETICAL_DESC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                break;
+            }
+            case "CREATED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                break;
+            }
+            case "CREATED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                break;
+            }
+            case "MODIFIED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                break;
+            }
+            case "MODIFIED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                break;
+            }
+            default: {
+                resultList = sortFiles(resultList, null);
+                break;
+            }
         }
 
         return resultList;
@@ -721,35 +718,34 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        if (typeSort != null) {
-            switch (typeSort) {
-                case "ALPHABETICAL_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-                    break;
-                }
-                case "ALPHABETICAL_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-                    break;
-                }
-                case "CREATED_DATE_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-                    break;
-                }
-                case "CREATED_DATE_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-                    break;
-                }
-                case "MODIFIED_DATE_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-                    break;
-                }
-                case "MODIFIED_DATE_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
-                    break;
-                }
-                default: {
-                    break;
-                }
+        switch (typeSort) {
+            case "ALPHABETICAL_ASC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                break;
+            }
+            case "ALPHABETICAL_DESC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                break;
+            }
+            case "CREATED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                break;
+            }
+            case "CREATED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                break;
+            }
+            case "MODIFIED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                break;
+            }
+            case "MODIFIED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                break;
+            }
+            default: {
+                resultList = sortFiles(resultList, null);
+                break;
             }
         }
 
@@ -793,38 +789,35 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        if (typeSort != null) {
-            switch (typeSort) {
-                case "ALPHABETICAL_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-                    break;
-                }
-                case "ALPHABETICAL_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-                    break;
-                }
-                case "CREATED_DATE_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-                    break;
-                }
-                case "CREATED_DATE_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-                    break;
-                }
-                case "MODIFIED_DATE_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-                    break;
-                }
-                case "MODIFIED_DATE_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
-                    break;
-                }
-                default: {
-                    break;
-                }
+        switch (typeSort) {
+            case "ALPHABETICAL_ASC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                break;
             }
-        } else {
-            resultList = sortFiles(resultList, null);
+            case "ALPHABETICAL_DESC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                break;
+            }
+            case "CREATED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                break;
+            }
+            case "CREATED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                break;
+            }
+            case "MODIFIED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                break;
+            }
+            case "MODIFIED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                break;
+            }
+            default: {
+                resultList = sortFiles(resultList, null);
+                break;
+            }
         }
 
         return resultList;
@@ -869,38 +862,35 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        if (typeSort != null) {
-            switch (typeSort) {
-                case "ALPHABETICAL_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-                    break;
-                }
-                case "ALPHABETICAL_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-                    break;
-                }
-                case "CREATED_DATE_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-                    break;
-                }
-                case "CREATED_DATE_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-                    break;
-                }
-                case "MODIFIED_DATE_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-                    break;
-                }
-                case "MODIFIED_DATE_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
-                    break;
-                }
-                default: {
-                    break;
-                }
+        switch (typeSort) {
+            case "ALPHABETICAL_ASC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                break;
             }
-        } else {
-            resultList = sortFiles(resultList, null);
+            case "ALPHABETICAL_DESC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                break;
+            }
+            case "CREATED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                break;
+            }
+            case "CREATED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                break;
+            }
+            case "MODIFIED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                break;
+            }
+            case "MODIFIED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                break;
+            }
+            default: {
+                resultList = sortFiles(resultList, null);
+                break;
+            }
         }
 
         return resultList;
@@ -929,8 +919,7 @@ public class ImplementationDrive implements Storage {
             if (exists) {
                 exists = false;
             } else {
-                throw new CustomException("File:" + targetFileName + "  does not exists in folder:"
-                        + StorageArguments.name + "/" + folderPath);
+                return false;
             }
         }
 
@@ -974,7 +963,7 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        StringBuilder result = new StringBuilder("Folders:\n");  //ispis svih apsolutnih putanja gde se sve nalazi file sa datim imenom
+        StringBuilder result = new StringBuilder();
 
         for (String path : resultList) {
             result.append(path).append("\n");
@@ -1025,38 +1014,35 @@ public class ImplementationDrive implements Storage {
             }
         }
 
-        if (typeSort != null) {
-            switch (typeSort) {
-                case "ALPHABETICAL_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
-                    break;
-                }
-                case "ALPHABETICAL_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
-                    break;
-                }
-                case "CREATED_DATE_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
-                    break;
-                }
-                case "CREATED_DATE_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
-                    break;
-                }
-                case "MODIFIED_DATE_ASC": {
-                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
-                    break;
-                }
-                case "MODIFIED_DATE_DESC": {
-                    resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
-                    break;
-                }
-                default: {
-                    break;
-                }
+        switch (typeSort) {
+            case "ALPHABETICAL_ASC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_ASC);
+                break;
             }
-        } else {
-            resultList = sortFiles(resultList, null);
+            case "ALPHABETICAL_DESC": {
+                resultList = sortFiles(resultList, TypeSort.ALPHABETICAL_DESC);
+                break;
+            }
+            case "CREATED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_ASC);
+                break;
+            }
+            case "CREATED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.CREATED_DATE_DESC);
+                break;
+            }
+            case "MODIFIED_DATE_ASC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_ASC);
+                break;
+            }
+            case "MODIFIED_DATE_DESC": {
+                resultList = sortFiles(resultList, TypeSort.MODIFIED_DATE_DESC);
+                break;
+            }
+            default: {
+                resultList = sortFiles(resultList, null);
+                break;
+            }
         }
 
         return resultList;
@@ -1208,8 +1194,9 @@ public class ImplementationDrive implements Storage {
         files = new ArrayList<>();
 
         for (File driveFile : driveFiles) {
-            files.add("AAAAA");
-            files.add(driveFile.getId());
+            files.add("FILE NAME: " + driveFile.getName() + "\n" +
+                    "FILE CREATION TIME: " + driveFile.getCreatedTime() + "\n" +
+                    "FILE MODIFICATION TIME: " + driveFile.getModifiedTime() + "\n");
         }
 
         return files;
