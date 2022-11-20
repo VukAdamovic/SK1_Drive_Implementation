@@ -23,6 +23,8 @@ import sk_projekat1.exceptions.CustomException;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ImplementationDrive implements Storage {
@@ -607,7 +609,7 @@ public class ImplementationDrive implements Storage {
 
         for (File file : files) {
             if (file.getParents() != null && file.getParents().contains(folderDriveId)) {
-                resultList.add(file.getId());//
+                resultList.add(file.getId());
             }
         }
 
@@ -667,7 +669,6 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public List<String> searchFilesInFolders(String folderPath, String typeSort, String typeFilter, String fileExtension, String startDate, String endDate) {
-
         if (folderPath.equals(".")) {
             folderPath = "";
         }
@@ -757,6 +758,7 @@ public class ImplementationDrive implements Storage {
         if (folderPath.equals(".")) {
             folderPath = "";
         }
+
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
         List<String> resultList = new ArrayList<>(); //lista fajlova iz tog foldera
 
@@ -765,7 +767,7 @@ public class ImplementationDrive implements Storage {
 
         for (File file : files) {
             if (file.getParents() != null && file.getParents().contains(folderDriveId) && file.getName().contains("." + fileExtension)) {
-                resultList.add(file.getId());//
+                resultList.add(file.getId());
             }
         }
 
@@ -838,7 +840,7 @@ public class ImplementationDrive implements Storage {
         for (File file : files) {
             if (file.getParents() != null && file.getParents().contains(folderDriveId)
                     && file.getName().toLowerCase().contains(fileSubstring.toLowerCase())) {
-                resultList.add(file.getId());//
+                resultList.add(file.getId());
             }
         }
 
@@ -974,9 +976,17 @@ public class ImplementationDrive implements Storage {
 
     @Override
     public List<String> searchModifiedFilesInFolder(String folderPath, String typeSort, String typeFilter, String fileExtension, String startDate, String endDate) {
-
         if (folderPath.equals(".")) {
             folderPath = "";
+        }
+
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date startUsableDate, endUsableDate;
+        try {
+            startUsableDate = dateFormatter.parse(startDate);
+            endUsableDate = dateFormatter.parse(endDate);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
 
         String folderDriveId = getFileId(folderPath, "application/vnd.google-apps.folder", service);
@@ -987,10 +997,26 @@ public class ImplementationDrive implements Storage {
 
         for (File file : files) {
             if (file.getParents() != null && file.getParents().contains(folderDriveId)) {
-                if ((file.getModifiedTime()).toString().compareTo(new DateTime(startDate).toString()) >= 0 &&
-                        (file.getModifiedTime()).toString().compareTo(new DateTime(endDate).toString()) <= 0) {
-                    resultList.add(file.getId());
-                }
+                resultList.add(file.getId());
+            }
+        }
+
+        List<File> driveFiles = new ArrayList<>();
+
+        for (String resultListItem : resultList) {
+            try {
+                driveFiles.add(service.files().get(resultListItem).setFields("name, id, createdTime, modifiedTime").execute());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        resultList = new ArrayList<>();
+
+        for (File driveFile : driveFiles) {
+            if ((driveFile.getCreatedTime()).toString().compareTo(new DateTime(startUsableDate).toString()) >= 0 &&
+                    (driveFile.getCreatedTime()).toString().compareTo(new DateTime(endUsableDate).toString()) <= 0) {
+                resultList.add(driveFile.getId());
             }
         }
 
@@ -1229,6 +1255,15 @@ public class ImplementationDrive implements Storage {
     public List<String> filterFilesByDate(List<String> files, TypeFilter typeFilter, String startDate, String endDate) {
         List<File> driveFiles = new ArrayList<>();
 
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date startUsableDate, endUsableDate;
+        try {
+            startUsableDate = dateFormatter.parse(startDate);
+            endUsableDate = dateFormatter.parse(endDate);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
         for (String file : files) {
             try {
                 driveFiles.add(service.files().get(file).setFields("name, id, createdTime, modifiedTime").execute());
@@ -1242,8 +1277,8 @@ public class ImplementationDrive implements Storage {
         switch (typeFilter) {
             case CREATED_DATE: {
                 for (File driveFile : driveFiles) {
-                    if ((driveFile.getModifiedTime()).toString().compareTo(new DateTime(startDate).toString()) >= 0 &&
-                            (driveFile.getModifiedTime()).toString().compareTo(new DateTime(endDate).toString()) <= 0) {
+                    if ((driveFile.getCreatedTime()).toString().compareTo(new DateTime(startUsableDate).toString()) >= 0 &&
+                            (driveFile.getCreatedTime()).toString().compareTo(new DateTime(endUsableDate).toString()) <= 0) {
                         files.add(driveFile.getId());
                     }
                 }
@@ -1251,8 +1286,8 @@ public class ImplementationDrive implements Storage {
             }
             case MODIFIED_DATE: {
                 for (File driveFile : driveFiles) {
-                    if ((driveFile.getCreatedTime()).toString().compareTo(new DateTime(startDate).toString()) >= 0 &&
-                            (driveFile.getCreatedTime()).toString().compareTo(new DateTime(endDate).toString()) <= 0) {
+                    if ((driveFile.getModifiedTime()).toString().compareTo(new DateTime(startUsableDate).toString()) >= 0 &&
+                            (driveFile.getModifiedTime()).toString().compareTo(new DateTime(endUsableDate).toString()) <= 0) {
                         files.add(driveFile.getId());
                     }
                 }
