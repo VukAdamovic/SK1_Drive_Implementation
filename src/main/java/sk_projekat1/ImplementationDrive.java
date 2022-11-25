@@ -122,8 +122,8 @@ public class ImplementationDrive implements Storage {
 
             try {
                 List<String> configAtributes = new ArrayList<>();
-//                java.io.File configFile = new java.io.File("D:/googleDriveFiles", storage.getName() + "_CONFIGURATION.txt");
-                java.io.File configFile = new java.io.File("/Users/adjenadic/googleDriveFiles", storage.getName() + "_CONFIGURATION.txt");
+                java.io.File configFile = new java.io.File("D:/googleDriveFiles", storage.getName() + "_CONFIGURATION.txt");
+                //java.io.File configFile = new java.io.File("/Users/adjenadic/googleDriveFiles", storage.getName() + "_CONFIGURATION.txt");
                 Scanner myReader = new Scanner(configFile);
 
                 while (myReader.hasNextLine()) {
@@ -178,8 +178,8 @@ public class ImplementationDrive implements Storage {
         }
 
         // Kreiranje lokalnog file
-//        java.io.File localFile = new java.io.File("D:/googleDriveFiles", storageName + "_Configuration.txt");
-        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles", storageName + "_Configuration.txt");
+        java.io.File localFile = new java.io.File("D:/googleDriveFiles", storageName + "_Configuration.txt");
+        //java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles", storageName + "_Configuration.txt");
         try {
             FileWriter fileWriter = new FileWriter(localFile);
             fileWriter.write("Storage name:" + storageName + "\n");
@@ -237,8 +237,8 @@ public class ImplementationDrive implements Storage {
         }
 
         // Kreiranje lokalnog file
-//        java.io.File localFile = new java.io.File("D:/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
-        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
+        java.io.File localFile = new java.io.File("D:/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
+        //java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles", StorageArguments.name + "_CONFIGURATION.txt");
         try {
             FileWriter fileWriter = new FileWriter(localFile);
             fileWriter.write("Storage name:" + StorageArguments.name + "\n");
@@ -337,8 +337,8 @@ public class ImplementationDrive implements Storage {
         File fileMetadata = new File();
         fileMetadata.setName(fileName);
         fileMetadata.setParents(Collections.singletonList(parentID));
-//        java.io.File localFile = new java.io.File("D:/googleDriveFiles/testSizeStorage.txt"); //zbog testiranja
-        java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles/testSizeStorage.txt");
+        java.io.File localFile = new java.io.File("D:/googleDriveFiles/testSizeStorage.txt"); //zbog testiranja
+   //     java.io.File localFile = new java.io.File("/Users/adjenadic/googleDriveFiles/testSizeStorage.txt");
 
         FileContent fileContent = new FileContent("txt/txt", localFile);
 
