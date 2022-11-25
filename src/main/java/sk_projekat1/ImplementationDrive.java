@@ -54,8 +54,8 @@ public class ImplementationDrive implements Storage {
      */
     private static final List<String> SCOPES =
             Arrays.asList(DriveScopes.DRIVE, DriveScopes.DRIVE_APPDATA, DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_METADATA, DriveScopes.DRIVE_SCRIPTS);
-    //    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
-    private static final String CREDENTIALS_FILE_PATH = "/andrej.json";
+        private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+    //private static final String CREDENTIALS_FILE_PATH = "/andrej.json";
 
     public ImplementationDrive() throws GeneralSecurityException, IOException {
     }
